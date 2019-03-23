@@ -1,0 +1,81 @@
+{
+  "name": "wheath",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".src/index.html",
+  "scripts": {
+    "start": "parcel ./src/index.html",
+    "prebuild-dev": "shx rm -rf dist/*",
+    "build-dev": "parcel build ./src/index.html --no-minify --public-url ./",
+    "prebuild": "shx rm -rf dist/*",
+    "build": "parcel build ./src/index.html --public-url ./",
+    "push-gh-pages": "push-dir --dir=dist --branch=gh-pages --cleanup --verbose"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.15.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-no-loops": "^0.3.0",
+    "eslint-plugin-optimize-regex": "^1.1.6",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-sonarjs": "^0.3.0",
+    "idb": "^3.0.2",
+    "parcel-bundler": "^1.11.0",
+    "prettier": "1.16.4",
+    "sass": "^1.17.2",
+    "shx": "^0.3.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "airbnb-base",
+      "prettier",
+      "plugin:import/errors",
+      "plugin:import/warnings",
+      "plugin:sonarjs/recommended"
+    ],
+    "plugins": [
+      "optimize-regex",
+      "sonarjs",
+      "no-loops"
+    ],
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "env": {
+      "es6": true,
+      "node": true,
+      "browser": true
+    },
+    "rules": {
+      "allowTernary": true,
+      "optimize-regex/optimize-regex": "warn",
+      "sonarjs/cognitive-complexity": [
+        "error",
+        30
+      ],
+      "no-loops/no-loops": 2,
+      "quotes": [
+        2,
+        "single"
+      ],
+      "object-curly-newline": [
+        "error",
+        {
+          "ObjectExpression": {
+            "multiline": true,
+            "minProperties": 2
+          },
+          "ObjectPattern": {
+            "multiline": true,
+            "minProperties": 3
+          },
+          "ImportDeclaration": "never",
+          "ExportDeclaration": "never"
+        }
+      ]
+    }
+  }
+}
