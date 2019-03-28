@@ -1,9 +1,7 @@
-import {
-  parseJsx,
+import {parseJsx,
   clearDomChildren,
   appendDomFragment,
-  buildDomFragment
-} from '../utils/parser';
+  buildDomFragment} from '../utils/parser';
 import ComponentFactory from './ComponentFactory';
 
 export default class Component {
@@ -41,7 +39,7 @@ export default class Component {
 
     string = string.trim().replace(/<([A-Z][A-Za-z]*)(.*)\/>/g, (match, p1, p2, offset) => {
       const id = `z${  idBase  }${componentCount++}`;
-
+      debugger
       // extract props
       const props = {};
       let parsingResults;
@@ -73,8 +71,6 @@ export default class Component {
       'focus', 'blur', 'submit', 'form'
     ];
     const elementsWithListeners = template.content.querySelectorAll([eventTypes].map(eventType => `on-${eventType}`));
-    console.log('template.content', [eventTypes].map(eventType => `on-${eventType}`));
-    console.log('elementsWithListeners', elementsWithListeners);
     elementsWithListeners.forEach(element => {
       eventTypes.forEach(eventType => {
         if (element.hasAttribute(`on-${  eventType}`)) {
@@ -90,6 +86,7 @@ export default class Component {
       const host = template.content.querySelector(`#${  id}`);
       const cls = ComponentFactory.get(componentMap[id].name);
       new cls(host, componentMap[id].props);
+      // host.outerHTML = host.innerHTML;
     });
 
     return template.content;

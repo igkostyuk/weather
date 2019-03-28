@@ -351,7 +351,8 @@ function () {
       var idBase = new Date().getTime();
       var componentMap = {};
       string = string.trim().replace(/<([A-Z][A-Za-z]*)(.*)\/>/g, function (match, p1, p2, offset) {
-        var id = "z".concat(idBase).concat(componentCount++); // extract props
+        var id = "z".concat(idBase).concat(componentCount++);
+        debugger; // extract props
 
         var props = {};
         var parsingResults;
@@ -382,10 +383,6 @@ function () {
       var elementsWithListeners = template.content.querySelectorAll([eventTypes].map(function (eventType) {
         return "on-".concat(eventType);
       }));
-      console.log('template.content', [eventTypes].map(function (eventType) {
-        return "on-".concat(eventType);
-      }));
-      console.log('elementsWithListeners', elementsWithListeners);
       elementsWithListeners.forEach(function (element) {
         eventTypes.forEach(function (eventType) {
           if (element.hasAttribute("on-".concat(eventType))) {
@@ -403,7 +400,7 @@ function () {
 
         var cls = _ComponentFactory.default.get(componentMap[id].name);
 
-        new cls(host, componentMap[id].props);
+        new cls(host, componentMap[id].props); // host.outerHTML = host.innerHTML;
       });
       return template.content;
     }
@@ -932,7 +929,7 @@ function (_Component) {
       var _this$state = this.state,
           todayForecast = _this$state.todayForecast,
           weekForecast = _this$state.weekForecast;
-      return '<nav class="search__container"><SearchBar onSubmit={this.getCityForecast}/></nav>';
+      return '<nav class="search__container"><div><SearchBar onSubmit={this.getCityForecast}/></div><div><SearchBar onSubmit={this.getCityForecast}/></div></nav>';
     }
   }]);
 
@@ -995,7 +992,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62427" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52781" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

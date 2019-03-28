@@ -44,7 +44,7 @@ export default class App extends Component {
       todayForecast,
       weekForecast
     } = this.state;
-    return '<nav class="search__container"><SearchBar onSubmit={this.getCityForecast}/></nav>'
+    return '<nav class="search__container"><div><SearchBar onSubmit={this.getCityForecast}/></div><div><SearchBar onSubmit={this.getCityForecast}/></div></nav>'
   }
 }
 ComponentFactory.register(SearchBar); // to register component class with factory
