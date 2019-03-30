@@ -114,6 +114,9 @@ body,
   align-items: flex-start;
   transition: color 2s ease;
 }
+.weather .details div {
+  width: 260px;
+}
 .weather .details .right {
   text-align: right;
 }
@@ -125,6 +128,7 @@ body,
   font-size: 22px;
 }
 .weather .details .temp {
+  position: absolute;
   font-size: 60px;
   line-height: 60px;
 }

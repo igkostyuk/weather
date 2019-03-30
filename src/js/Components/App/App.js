@@ -3,7 +3,7 @@ import ComponentFactory from '../../framework/ComponentFactory';
 import {SearchBar} from '../SearchBar';
 import {CurrentWeather} from '../CurrentWeather';
 import {WeatherForecast} from '../WeatherForecast';
-// import WeatherDataService from '../../../Services/WeatherDataService';
+
 
 export default class App extends Component {
   constructor(host) {
@@ -23,28 +23,28 @@ export default class App extends Component {
 
   getWeattherFromGeolocation() {
     if (!this.state.todayForecast) {
-      WeatherDataService.getGeolocation().then(city => this.getCityForecast(city));
-      console.log('geo.loc', city)
+      WeatherDataService.getGeolocation().then(city =>
+        this.getCityForecast(city),
+      );
+      console.log('geo.loc', city);
     }
   }
 
   getCityForecast(city) {
-    console.log('fgfh');
-    // this.state.inputValue = city;
-    // WeatherDataService.getForecast(city).then(([today, week]) => {
-    //   return {
-    //     todayForecast: today,
-    //     weekForecast: week
-    //   }
-    // }).then(this.updateState)
+    console.log('getCityForecast');
   }
 
   render() {
-    const {
-      todayForecast,
-      weekForecast
-    } = this.state;
-    return '<nav class="search__container"><div><SearchBar onSubmit={this.getCityForecast}/></div><div><SearchBar onSubmit={this.getCityForecast}/></div></nav>'
+    return `
+    <nav class="search__container">
+      <SearchBar/>
+    </nav>
+    <div id="card" class="weather">
+      <div class="details">
+      <CurrentWeather/>
+      </div>
+    </div>
+    `;
   }
 }
-ComponentFactory.register(SearchBar); // to register component class with factory
+// to register component class with factory

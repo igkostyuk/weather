@@ -1,11 +1,13 @@
 import Component from '../../framework/Component';
-import AppState from '../../Services/AppState';
 import ComponentFactory from '../../framework/ComponentFactory';
+import WeatherDataService from '../../Services/WeatherDataService';
+import AppState from '../../Services/AppState';
+
 
 export default class SearchBar extends Component {
   constructor(host, props) {
     super(host, props);
-    AppState.watch('COUNT', this.updateMyself);
+    AppState.watch('CITY', this.updateMyself);
   }
 
   init() {
@@ -18,22 +20,25 @@ export default class SearchBar extends Component {
 
   updateMyself(subState) {
     // .... transform response
-    console.log('PNumber in CountControls', subState);
+
+
     // do update
     this.updateState(subState);
   }
 
   onSubmit(e) {
-    console.log('onSubmit run');
     e.preventDefault();
-    const city = e.target.elements.city.value;
-    this.props.onSubmit(city);
+    WeatherDataService.forwardGeocoding('kiev');
+    console.log('nn,mnm');
+    // const city = e.target.elements.city.value;
+    // console.log('onSubmit run', city);
+    // this.props.onSubmit(city);
   }
 
   render() {
     return ` <form on-Submit={this.onSubmit}>
                <input class="search__input " name="city" placeholder="city" type="text" value="" />
-               <button class="search__button" type="submit" on-Click={this.onSubmit} />search</button>
+               <button class="search__button" type="submit"/>search</button>
              </form>`
   }
 }

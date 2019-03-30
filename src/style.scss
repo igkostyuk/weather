@@ -141,6 +141,10 @@ body {
 
     transition: color $speed ease;
 
+    div {
+      width: 260px;
+      //height: 200px;
+    }
 
     .right {
       text-align: right;
@@ -156,6 +160,7 @@ body {
     }
 
     .temp {
+      position: absolute;
       font-size: 60px;
       line-height: 60px;
 

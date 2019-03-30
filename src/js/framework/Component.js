@@ -1,5 +1,4 @@
-import {parseJsx,
-  clearDomChildren,
+import {clearDomChildren,
   appendDomFragment,
   buildDomFragment} from '../utils/parser';
 import ComponentFactory from './ComponentFactory';
@@ -32,55 +31,53 @@ export default class Component {
 
   _createDomFragment(string) {
     const template = document.createElement('template');
-
     let componentCount = 0;
     const idBase = new Date().getTime();
     const componentMap = {};
 
-    string = string.trim().replace(/<([A-Z][A-Za-z]*)(.*)\/>/g, (match, p1, p2, offset) => {
-      const id = `z${  idBase  }${componentCount++}`;
-      debugger
-      // extract props
-      const props = {};
-      let parsingResults;
-      p2 = p2.trim();
-      if (p2.length) {
-        const paramsRegex = /(\S+)=["']?((?:(?!\/>|>|"|'|\s).)+)/g;
-        while ((parsingResults = paramsRegex.exec(p2)) !== null) {
-          const objectPropertyName = parsingResults[2].match(/{(.*)}/);
-          const propValue = objectPropertyName ?
-            this[objectPropertyName[1].split('.').filter(segment => segment !== 'this').join('.')] :
-            parsingResults[2];
-          props[parsingResults[1]] = propValue;
-        }
-      }
+    const componentRegex = /<[A-Z][A-Za-z].+?\/>/g; // <Component/>
+    const componentNameRegex = /<([A-Z][A-Za-z]*)/;
+    const paramsRegex = /(\S+)=["']?((?:(?!\/>|>|"|'|\s).)+)/g; // param=value
 
+    string = string.trim().replace(componentRegex, (parsingComponentResults) => {
+      const id = `z${  idBase  }${componentCount++}`;
+      const name = componentNameRegex.exec(parsingComponentResults)[1];
+      const props = {};
+      let parsingParamsResults;
+      while ((parsingParamsResults = paramsRegex.exec(parsingComponentResults)) !== null) {
+        const [, propsName, propsValue] = parsingParamsResults;
+        const objectPropertyName = propsValue.match(/{(.*)}/);
+        props[propsName] =
+          objectPropertyName ?
+          this[objectPropertyName[1].split('.').filter(segment => segment !== 'this').join('.')] :
+          propsValue;
+      }
       componentMap[id] = {
-        name: p1,
+        name,
         props,
       };
       return `<div id="${id}"></div>`;
     });
     template.innerHTML = string;
 
-    console.log('string', string);
-
     // manage event handlers
     const eventTypes = ['click', 'mouseup', 'mousedown', 'mouseover', 'mousein', 'mouseout',
       'change', 'input', 'keyup', 'keydown',
-      'focus', 'blur', 'submit', 'form'
+      'focus', 'blur', 'form', 'submit'
     ];
-    const elementsWithListeners = template.content.querySelectorAll([eventTypes].map(eventType => `on-${eventType}`));
+    const elementsWithListeners = template.content.querySelectorAll([eventTypes].map(eventType => `on-${  eventType}`));
     elementsWithListeners.forEach(element => {
       eventTypes.forEach(eventType => {
         if (element.hasAttribute(`on-${  eventType}`)) {
           let handlerName = element.getAttribute(`on-${  eventType}`).match(/{(.*)}/)[1];
           handlerName = handlerName.split('.').filter(segment => segment !== 'this').join('.');
-          element.addEventListener(eventType, this[handlerName].bind(this));
+          if (this[handlerName]) {
+            console.log('hm', element);
+            element.addEventListener(eventType, this[handlerName].bind(this));
+          }
         }
       });
     });
-
     // render mapped components
     Object.keys(componentMap).forEach(id => {
       const host = template.content.querySelector(`#${  id}`);

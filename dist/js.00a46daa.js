@@ -117,7 +117,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"js/framework/ComponentFactory.js":[function(require,module,exports) {
+})({"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"style.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"js/framework/ComponentFactory.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -295,6 +367,14 @@ var _ComponentFactory = _interopRequireDefault(require("./ComponentFactory"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -350,36 +430,38 @@ function () {
       var componentCount = 0;
       var idBase = new Date().getTime();
       var componentMap = {};
-      string = string.trim().replace(/<([A-Z][A-Za-z]*)(.*)\/>/g, function (match, p1, p2, offset) {
+      var componentRegex = /<[A-Z][A-Za-z].+?\/>/g; // <Component/>
+
+      var componentNameRegex = /<([A-Z][A-Za-z]*)/;
+      var paramsRegex = /(\S+)=["']?((?:(?!\/>|>|"|'|\s).)+)/g; // param=value
+
+      string = string.trim().replace(componentRegex, function (parsingComponentResults) {
         var id = "z".concat(idBase).concat(componentCount++);
-        debugger; // extract props
-
+        var name = componentNameRegex.exec(parsingComponentResults)[1];
         var props = {};
-        var parsingResults;
-        p2 = p2.trim();
+        var parsingParamsResults;
 
-        if (p2.length) {
-          var paramsRegex = /(\S+)=["']?((?:(?!\/>|>|"|'|\s).)+)/g;
+        while ((parsingParamsResults = paramsRegex.exec(parsingComponentResults)) !== null) {
+          var _parsingParamsResults = parsingParamsResults,
+              _parsingParamsResults2 = _slicedToArray(_parsingParamsResults, 3),
+              propsName = _parsingParamsResults2[1],
+              propsValue = _parsingParamsResults2[2];
 
-          while ((parsingResults = paramsRegex.exec(p2)) !== null) {
-            var objectPropertyName = parsingResults[2].match(/{(.*)}/);
-            var propValue = objectPropertyName ? _this[objectPropertyName[1].split('.').filter(function (segment) {
-              return segment !== 'this';
-            }).join('.')] : parsingResults[2];
-            props[parsingResults[1]] = propValue;
-          }
+          var objectPropertyName = propsValue.match(/{(.*)}/);
+          props[propsName] = objectPropertyName ? _this[objectPropertyName[1].split('.').filter(function (segment) {
+            return segment !== 'this';
+          }).join('.')] : propsValue;
         }
 
         componentMap[id] = {
-          name: p1,
+          name: name,
           props: props
         };
         return "<div id=\"".concat(id, "\"></div>");
       });
-      template.innerHTML = string;
-      console.log('string', string); // manage event handlers
+      template.innerHTML = string; // manage event handlers
 
-      var eventTypes = ['click', 'mouseup', 'mousedown', 'mouseover', 'mousein', 'mouseout', 'change', 'input', 'keyup', 'keydown', 'focus', 'blur', 'submit', 'form'];
+      var eventTypes = ['click', 'mouseup', 'mousedown', 'mouseover', 'mousein', 'mouseout', 'change', 'input', 'keyup', 'keydown', 'focus', 'blur', 'form', 'submit'];
       var elementsWithListeners = template.content.querySelectorAll([eventTypes].map(function (eventType) {
         return "on-".concat(eventType);
       }));
@@ -390,7 +472,11 @@ function () {
             handlerName = handlerName.split('.').filter(function (segment) {
               return segment !== 'this';
             }).join('.');
-            element.addEventListener(eventType, _this[handlerName].bind(_this));
+
+            if (_this[handlerName]) {
+              console.log('hm', element);
+              element.addEventListener(eventType, _this[handlerName].bind(_this));
+            }
           }
         });
       }); // render mapped components
@@ -410,7 +496,100 @@ function () {
 }();
 
 exports.default = Component;
-},{"../utils/parser":"js/utils/parser.js","./ComponentFactory":"js/framework/ComponentFactory.js"}],"js/Services/AppState.js":[function(require,module,exports) {
+},{"../utils/parser":"js/utils/parser.js","./ComponentFactory":"js/framework/ComponentFactory.js"}],"js/Services/WeatherDataService.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// const base = 'http://api.openweathermap.org/data/2.5/';
+// const unit = '&units=metric';
+// const key = '&APPID=72e4c511f65e4706ad1a983c6eed3dc9';
+var WeatherDataService =
+/*#__PURE__*/
+function () {
+  function WeatherDataService() {
+    _classCallCheck(this, WeatherDataService);
+
+    this.geocoderBase = 'https://api.opencagedata.com/geocode/v1/json?q=';
+    this.forecastBase = 'https://api.darksky.net/forecast/';
+    this.currentLocationBase = 'https://ipapi.co/json';
+    this.geocoderKey = '&key=39b7025dc04d4a47a61c8866819b5161';
+    this.forecastKey = 'f5bcd9de3734de86a2d47a58d91793ab/';
+    this.corsAnywhere = 'https://cors-anywhere.herokuapp.com/';
+    this.forecastData = {};
+    this.subscribers = [];
+  } // subscribeForCurrentWeather(callback) {
+  //   this.getCurrentWeather().then(callback);
+  // }
+
+
+  _createClass(WeatherDataService, [{
+    key: "getCurrentLocation",
+    value: function getCurrentLocation() {
+      return this.getData(this.currentLocationBase).then(function (response) {
+        return response.city;
+      });
+    } // `${this.geocoderBase}${city}${this.geocoderFormat}`
+
+  }, {
+    key: "forwardGeocoding",
+    value: function forwardGeocoding() {
+      var _this = this;
+
+      var city = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Kiev';
+      return this.getData("".concat(this.geocoderBase).concat(city).concat(this.geocoderKey)).then(function (response) {
+        return response.results[0].geometry;
+      }).then(function (response) {
+        return _this.geWeatherForecast(response.lat, response.lng);
+      });
+    }
+  }, {
+    key: "geWeatherForecast",
+    value: function geWeatherForecast(lat, lng) {
+      var _this2 = this;
+
+      return this.getData("".concat(this.corsAnywhere).concat(this.forecastBase).concat(this.forecastKey).concat(lat, ",").concat(lng, "?units=ca")).then(function (response) {
+        _this2.forecastData = response;
+
+        _this2.subscribers.forEach(function (subscriber) {
+          return subscriber(_this2.forecastData);
+        });
+      });
+    }
+  }, {
+    key: "subscribeForCurrentWeather",
+    value: function subscribeForCurrentWeather(subscriber) {
+      this.subscribers.push(subscriber);
+    }
+  }, {
+    key: "getData",
+    value: function getData(api) {
+      return fetch("".concat(api)).then(function (response) {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        return response.json();
+      });
+    }
+  }]);
+
+  return WeatherDataService;
+}();
+
+var _default = new WeatherDataService();
+
+exports.default = _default;
+},{}],"js/Services/AppState.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -468,9 +647,11 @@ exports.default = void 0;
 
 var _Component2 = _interopRequireDefault(require("../../framework/Component"));
 
-var _AppState = _interopRequireDefault(require("../../Services/AppState"));
-
 var _ComponentFactory = _interopRequireDefault(require("../../framework/ComponentFactory"));
+
+var _WeatherDataService = _interopRequireDefault(require("../../Services/WeatherDataService"));
+
+var _AppState = _interopRequireDefault(require("../../Services/AppState"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -504,7 +685,7 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(SearchBar).call(this, host, props));
 
-    _AppState.default.watch('COUNT', _this.updateMyself);
+    _AppState.default.watch('CITY', _this.updateMyself);
 
     return _this;
   }
@@ -522,22 +703,24 @@ function (_Component) {
     key: "updateMyself",
     value: function updateMyself(subState) {
       // .... transform response
-      console.log('PNumber in CountControls', subState); // do update
-
+      // do update
       this.updateState(subState);
     }
   }, {
     key: "onSubmit",
     value: function onSubmit(e) {
-      console.log('onSubmit run');
       e.preventDefault();
-      var city = e.target.elements.city.value;
-      this.props.onSubmit(city);
+
+      _WeatherDataService.default.forwardGeocoding('kiev');
+
+      console.log('nn,mnm'); // const city = e.target.elements.city.value;
+      // console.log('onSubmit run', city);
+      // this.props.onSubmit(city);
     }
   }, {
     key: "render",
     value: function render() {
-      return " <form on-Submit={this.onSubmit}>\n               <input class=\"search__input \" name=\"city\" placeholder=\"city\" type=\"text\" value=\"\" />\n               <button class=\"search__button\" type=\"submit\" on-Click={this.onSubmit} />search</button>\n             </form>";
+      return " <form on-Submit={this.onSubmit}>\n               <input class=\"search__input \" name=\"city\" placeholder=\"city\" type=\"text\" value=\"\" />\n               <button class=\"search__button\" type=\"submit\"/>search</button>\n             </form>";
     }
   }]);
 
@@ -548,7 +731,7 @@ function (_Component) {
 exports.default = SearchBar;
 
 _ComponentFactory.default.register(SearchBar); // to register component class with factory
-},{"../../framework/Component":"js/framework/Component.js","../../Services/AppState":"js/Services/AppState.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js"}],"js/Components/SearchBar/index.js":[function(require,module,exports) {
+},{"../../framework/Component":"js/framework/Component.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../../Services/WeatherDataService":"js/Services/WeatherDataService.js","../../Services/AppState":"js/Services/AppState.js"}],"js/Components/SearchBar/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -565,80 +748,79 @@ var _SearchBar = _interopRequireDefault(require("./SearchBar"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 },{"./SearchBar":"js/Components/SearchBar/SearchBar.js"}],"js/Components/CurrentWeather/CurrentWeather.js":[function(require,module,exports) {
-// // clear sky
-// // import star from '../../../animated/day.svg';
-// // import Component from '../../framework/Component';
-// // import 01n from '../../../animated/night.svg';
-// // //few clouds
-// // import 02d from "../../../animated/day.svg";
-// // import 02n from './';
-// // //scattered clouds
-// // import 03d from "../../../animated/day.svg";
-// // import 03n from './';
-// // //broken clouds
-// // import 04d from "../../../animated/day.svg";
-// // import 04n from './';
-// // //shower rain
-// // import 09d from "../../../animated/day.svg";
-// // import 09n from './';
-// // //rain
-// // import 10d from "../../../animated/day.svg";
-// // import 10n from './';
-// // //thunderstorm
-// // import 11d from "../../../animated/day.svg";
-// // import 11n from './';
-// // //snow
-// // import 13d from "../../../animated/day.svg";
-// // import 13n from './';
-// // //mist
-// // import 50d from "../../../animated/day.svg";
-// // import 50n from './';
-// // import WeatherDataService from '../../../Services/WeatherDataService'
-// export default class CurrentWeather extends Component {
-//   constructor(host, props) {
-//     super(host, props);
-//     // WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
-//   }
-//   // onServerResponse(weatherData) {
-//   //   // ensure weatherData is properly rendered
-//   //   // this.props.weather = weatherData;
-//   //   // console.log('CurrentWeather', this.props.weather.main.temp);
-//   //
-//   render() {
-//     return [{
-//         tag: 'div',
-//         classList: ['temp'],
-//         content: Math.round(this.props.forcast ? this.props.forcast.main.temp : null),
-//       },
-//       {
-//         tag: 'div',
-//         classList: ['right'],
-//         children: [{
-//             tag: 'div',
-//             classList: ['summary'],
-//             content: this.props.forcast ? this.props.forcast.name : null,
-//           },
-//           {
-//             tag: 'div',
-//             classList: ['date'],
-//             content: `${this.props.forcast ?this.props.forcast.wind.speed:null}km/h`,
-//           },
-//           {
-//             tag: 'div',
-//             classList: ['date'],
-//             content: `${this.props.forcast ?this.props.forcast.main.humidity:null}%`,
-//           },
-//         ],
-//       },
-//       {
-//         tag: 'div',
-//         classList: ['weather-icon'],
-//         content: `<img src="${img['01n']}" />`,
-//       },
-//     ];
-//   }
-// }
-},{}],"js/Components/CurrentWeather/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _Component2 = _interopRequireDefault(require("../../framework/Component"));
+
+var _AppState = _interopRequireDefault(require("../../Services/AppState"));
+
+var _ComponentFactory = _interopRequireDefault(require("../../framework/ComponentFactory"));
+
+var _WeatherDataService = _interopRequireDefault(require("../../Services/WeatherDataService"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var CurrentWeather =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(CurrentWeather, _Component);
+
+  function CurrentWeather(host, props) {
+    var _this;
+
+    _classCallCheck(this, CurrentWeather);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CurrentWeather).call(this, host, props));
+    _this.onServerResponse = _this.onServerResponse.bind(_assertThisInitialized(_this));
+
+    _WeatherDataService.default.subscribeForCurrentWeather(_this.onServerResponse);
+
+    return _this;
+  }
+
+  _createClass(CurrentWeather, [{
+    key: "onServerResponse",
+    value: function onServerResponse(weatherData) {
+      // ensure weatherData is properly rendered
+      console.log('CurrentWeather', weatherData);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return "\n  <div class=\"temp\">\n    20<span><a>C</a> |<a>F</a></span>\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">Monday 22 August</div>\n    <div class=\"summary\">Kiev</div>\n    <div class=\"date\">22</div>\n    <div class=\"date\">30</div>\n    <div class=\"date\">40</div>\n  </div>\n  <div class=\"weather-icon\">\n    <img src=\"./animated/day.svg\" />\n  </div>";
+    }
+  }]);
+
+  return CurrentWeather;
+}(_Component2.default);
+
+exports.default = CurrentWeather;
+
+_ComponentFactory.default.register(CurrentWeather);
+},{"../../framework/Component":"js/framework/Component.js","../../Services/AppState":"js/Services/AppState.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../../Services/WeatherDataService":"js/Services/WeatherDataService.js"}],"js/Components/CurrentWeather/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -876,7 +1058,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-// import WeatherDataService from '../../../Services/WeatherDataService';
 var App =
 /*#__PURE__*/
 function (_Component) {
@@ -915,30 +1096,20 @@ function (_Component) {
   }, {
     key: "getCityForecast",
     value: function getCityForecast(city) {
-      console.log('fgfh'); // this.state.inputValue = city;
-      // WeatherDataService.getForecast(city).then(([today, week]) => {
-      //   return {
-      //     todayForecast: today,
-      //     weekForecast: week
-      //   }
-      // }).then(this.updateState)
+      console.log('getCityForecast');
     }
   }, {
     key: "render",
     value: function render() {
-      var _this$state = this.state,
-          todayForecast = _this$state.todayForecast,
-          weekForecast = _this$state.weekForecast;
-      return '<nav class="search__container"><div><SearchBar onSubmit={this.getCityForecast}/></div><div><SearchBar onSubmit={this.getCityForecast}/></div></nav>';
+      return "\n    <nav class=\"search__container\">\n      <SearchBar/>\n    </nav>\n    <div id=\"card\" class=\"weather\">\n      <div class=\"details\">\n      <CurrentWeather/>\n      </div>\n    </div>\n    ";
     }
   }]);
 
   return App;
-}(_Component2.default);
+}(_Component2.default); // to register component class with factory
+
 
 exports.default = App;
-
-_ComponentFactory.default.register(_SearchBar.SearchBar); // to register component class with factory
 },{"../../framework/Component":"js/framework/Component.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../SearchBar":"js/Components/SearchBar/index.js","../CurrentWeather":"js/Components/CurrentWeather/index.js","../WeatherForecast":"js/Components/WeatherForecast/index.js"}],"js/Components/App/index.js":[function(require,module,exports) {
 "use strict";
 
@@ -958,13 +1129,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 },{"./App":"js/Components/App/App.js"}],"js/index.js":[function(require,module,exports) {
 "use strict";
 
+require("../style.scss");
+
 var _App = require("./Components/App");
 
 // import {routes} from './routes/routes';
 // import Router from './framework/Router'
 new _App.App(document.getElementById('app')); // , routes, App)
 // router.init();
-},{"./Components/App":"js/Components/App/index.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../style.scss":"style.scss","./Components/App":"js/Components/App/index.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -992,7 +1165,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52781" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51711" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

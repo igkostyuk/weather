@@ -28,50 +28,39 @@
 // // import 50d from "../../../animated/day.svg";
 // // import 50n from './';
 // // import WeatherDataService from '../../../Services/WeatherDataService'
+import Component from '../../framework/Component';
+import AppState from '../../Services/AppState';
+import ComponentFactory from '../../framework/ComponentFactory';
+import WeatherDataService from '../../Services/WeatherDataService';
 
-// export default class CurrentWeather extends Component {
-//   constructor(host, props) {
-//     super(host, props);
-//     // WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
-//   }
+export default class CurrentWeather extends Component {
+  constructor(host, props) {
+    super(host, props);
+    this.onServerResponse = this.onServerResponse.bind(this);
+    WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
+  }
 
-//   // onServerResponse(weatherData) {
-//   //   // ensure weatherData is properly rendered
-//   //   // this.props.weather = weatherData;
-//   //   // console.log('CurrentWeather', this.props.weather.main.temp);
-//   //
+  onServerResponse(weatherData) {
+    if (weatherData.currently) {
 
-//   render() {
-//     return [{
-//         tag: 'div',
-//         classList: ['temp'],
-//         content: Math.round(this.props.forcast ? this.props.forcast.main.temp : null),
-//       },
-//       {
-//         tag: 'div',
-//         classList: ['right'],
-//         children: [{
-//             tag: 'div',
-//             classList: ['summary'],
-//             content: this.props.forcast ? this.props.forcast.name : null,
-//           },
-//           {
-//             tag: 'div',
-//             classList: ['date'],
-//             content: `${this.props.forcast ?this.props.forcast.wind.speed:null}km/h`,
-//           },
-//           {
-//             tag: 'div',
-//             classList: ['date'],
-//             content: `${this.props.forcast ?this.props.forcast.main.humidity:null}%`,
-//           },
-//         ],
-//       },
-//       {
-//         tag: 'div',
-//         classList: ['weather-icon'],
-//         content: `<img src="${img['01n']}" />`,
-//       },
-//     ];
-//   }
-// }
+    }
+  }
+
+  render() {
+    return `
+  <div class="temp">
+    20<span><a>C</a> |<a>F</a></span>
+  </div>
+  <div class="right">
+    <div class="date">Monday 22 August</div>
+    <div class="summary">Kiev</div>
+    <div class="date">22</div>
+    <div class="date">30</div>
+    <div class="date">40</div>
+  </div>
+  <div class="weather-icon">
+    <img src="./animated/day.svg" />
+  </div>`
+  }
+}
+ComponentFactory.register(CurrentWeather);
