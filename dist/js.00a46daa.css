@@ -127,6 +127,9 @@ body,
   font-weight: 600;
   font-size: 22px;
 }
+.weather .details .summary:first-letter {
+  text-transform: uppercase;
+}
 .weather .details .temp {
   position: absolute;
   font-size: 60px;

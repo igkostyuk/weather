@@ -159,6 +159,10 @@ body {
       font-size: 22px;
     }
 
+    .summary:first-letter {
+      text-transform: uppercase;
+    }
+
     .temp {
       position: absolute;
       font-size: 60px;

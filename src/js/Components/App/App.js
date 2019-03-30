@@ -11,7 +11,6 @@ export default class App extends Component {
   }
 
   init() {
-    this.getCityForecast = this.getCityForecast.bind(this);
     this.updateState = this.updateState.bind(this);
     this.state = {
       inputValue: '',
@@ -28,10 +27,6 @@ export default class App extends Component {
       );
       console.log('geo.loc', city);
     }
-  }
-
-  getCityForecast(city) {
-    console.log('getCityForecast');
   }
 
   render() {

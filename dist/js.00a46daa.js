@@ -219,7 +219,7 @@ exports.default = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.buildDomFragment = exports.appendDomFragment = exports.clearDomChildren = exports.parseJsx = void 0;
+exports.buildDomFragment = exports.createDomFragment = exports.appendDomFragment = exports.clearDomChildren = exports.parseJsx = void 0;
 
 var _ComponentFactory = _interopRequireDefault(require("../framework/ComponentFactory"));
 
@@ -320,6 +320,14 @@ var appendDomFragment = function appendDomFragment(domElement, domFragment) {
 };
 
 exports.appendDomFragment = appendDomFragment;
+
+var createDomFragment = function createDomFragment(string) {
+  var template = document.createElement('template');
+  template.innerHTML = string.trim();
+  return template.content;
+};
+
+exports.createDomFragment = createDomFragment;
 
 var buildDomFragment = function buildDomFragment(host, elements) {
   elements.forEach(function (elementSpec) {
@@ -461,7 +469,8 @@ function () {
       });
       template.innerHTML = string; // manage event handlers
 
-      var eventTypes = ['click', 'mouseup', 'mousedown', 'mouseover', 'mousein', 'mouseout', 'change', 'input', 'keyup', 'keydown', 'focus', 'blur', 'form', 'submit'];
+      var eventTag = [];
+      var eventTypes = ['clicletkas', 'form', 'submit'];
       var elementsWithListeners = template.content.querySelectorAll([eventTypes].map(function (eventType) {
         return "on-".concat(eventType);
       }));
@@ -474,7 +483,7 @@ function () {
             }).join('.');
 
             if (_this[handlerName]) {
-              console.log('hm', element);
+              console.log('element', element, eventType, handlerName);
               element.addEventListener(eventType, _this[handlerName].bind(_this));
             }
           }
@@ -486,7 +495,8 @@ function () {
 
         var cls = _ComponentFactory.default.get(componentMap[id].name);
 
-        new cls(host, componentMap[id].props); // host.outerHTML = host.innerHTML;
+        new cls(host, componentMap[id].props);
+        console.log(host); // host.outerHTML = host.innerHTML;
       });
       return template.content;
     }
@@ -546,6 +556,8 @@ function () {
       var _this = this;
 
       var city = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Kiev';
+      this.forecastData.city = city;
+      console.log('this.forecastData.city', this.forecastData.city);
       return this.getData("".concat(this.geocoderBase).concat(city).concat(this.geocoderKey)).then(function (response) {
         return response.results[0].geometry;
       }).then(function (response) {
@@ -558,10 +570,10 @@ function () {
       var _this2 = this;
 
       return this.getData("".concat(this.corsAnywhere).concat(this.forecastBase).concat(this.forecastKey).concat(lat, ",").concat(lng, "?units=ca")).then(function (response) {
-        _this2.forecastData = response;
+        _this2.forecastData = Object.assign({}, _this2.forecastData, response);
 
         _this2.subscribers.forEach(function (subscriber) {
-          return subscriber(_this2.forecastData);
+          return subscriber(_this2.forecastData, _this2.forecastData.city);
         });
       });
     }
@@ -685,7 +697,8 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(SearchBar).call(this, host, props));
 
-    _AppState.default.watch('CITY', _this.updateMyself);
+    _AppState.default.watch('CITY', _this.updateMyself); // window.addEventListener('submit', this.onSubmit.bind(this));
+
 
     return _this;
   }
@@ -693,7 +706,6 @@ function (_Component) {
   _createClass(SearchBar, [{
     key: "init",
     value: function init() {
-      this.onSubmit = this.onSubmit.bind(this);
       this.state = {
         value: this.props.value * 2,
         quantifier: 7
@@ -710,12 +722,13 @@ function (_Component) {
     key: "onSubmit",
     value: function onSubmit(e) {
       e.preventDefault();
+      var city = e.target.elements.city.value;
 
-      _WeatherDataService.default.forwardGeocoding('kiev');
+      if (city) {
+        e.target.elements.city.value = '';
 
-      console.log('nn,mnm'); // const city = e.target.elements.city.value;
-      // console.log('onSubmit run', city);
-      // this.props.onSubmit(city);
+        _WeatherDataService.default.forwardGeocoding(city);
+      }
     }
   }, {
     key: "render",
@@ -783,6 +796,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+// list = [
+//   'clear-day', 'clear-night', 'partly-cloudy-day',
+//   'partly-cloudy-night', 'cloudy', 'rain', 'sleet', 'snow', 'wind',
+//   'fog'
+// ];
 var CurrentWeather =
 /*#__PURE__*/
 function (_Component) {
@@ -802,15 +820,37 @@ function (_Component) {
   }
 
   _createClass(CurrentWeather, [{
+    key: "init",
+    value: function init() {
+      this.state = {
+        temperature: '',
+        icon: '',
+        windSpeed: '',
+        humidity: '',
+        date: '',
+        city: ''
+      };
+    }
+  }, {
     key: "onServerResponse",
-    value: function onServerResponse(weatherData) {
-      // ensure weatherData is properly rendered
-      console.log('CurrentWeather', weatherData);
+    value: function onServerResponse(_ref, city) {
+      var currently = _ref.currently;
+
+      if (currently) {
+        currently.date = new Date(currently.time * 1000).toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric'
+        });
+        currently.temperature = Math.round(currently.temperature);
+        currently.city = city;
+        console.log('state', this.state);
+        this.updateState(currently);
+      }
     }
   }, {
     key: "render",
     value: function render() {
-      return "\n  <div class=\"temp\">\n    20<span><a>C</a> |<a>F</a></span>\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">Monday 22 August</div>\n    <div class=\"summary\">Kiev</div>\n    <div class=\"date\">22</div>\n    <div class=\"date\">30</div>\n    <div class=\"date\">40</div>\n  </div>\n  <div class=\"weather-icon\">\n    <img src=\"./animated/day.svg\" />\n  </div>";
+      return "\n  <div class=\"temp\">\n  ".concat(this.state.temperature, "\n  <span><a>C</a> |<a>F</a></span>\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">").concat(this.state.date, "</div>\n    <div class=\"summary\">").concat(this.state.city, "</div>\n    <div class=\"date\">").concat(this.state.humidity, "</div>\n    <div class=\"date\">").concat(this.state.windSpeed, "</div>\n  </div>\n  <div class=\"weather-icon\">\n    <canvas id=\"icon1\" width=\"128\" height=\"128\"></canvas>\n  </div>");
     }
   }]);
 
@@ -1072,7 +1112,6 @@ function (_Component) {
   _createClass(App, [{
     key: "init",
     value: function init() {
-      this.getCityForecast = this.getCityForecast.bind(this);
       this.updateState = this.updateState.bind(this);
       this.state = {
         inputValue: '',
@@ -1092,11 +1131,6 @@ function (_Component) {
         });
         console.log('geo.loc', city);
       }
-    }
-  }, {
-    key: "getCityForecast",
-    value: function getCityForecast(city) {
-      console.log('getCityForecast');
     }
   }, {
     key: "render",
@@ -1165,7 +1199,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51711" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52760" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

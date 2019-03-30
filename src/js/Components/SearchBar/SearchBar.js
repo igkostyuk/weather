@@ -8,10 +8,10 @@ export default class SearchBar extends Component {
   constructor(host, props) {
     super(host, props);
     AppState.watch('CITY', this.updateMyself);
+    // window.addEventListener('submit', this.onSubmit.bind(this));
   }
 
   init() {
-    this.onSubmit = this.onSubmit.bind(this);
     this.state = {
       value: this.props.value * 2,
       quantifier: 7,
@@ -28,11 +28,11 @@ export default class SearchBar extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    WeatherDataService.forwardGeocoding('kiev');
-    console.log('nn,mnm');
-    // const city = e.target.elements.city.value;
-    // console.log('onSubmit run', city);
-    // this.props.onSubmit(city);
+    const city = e.target.elements.city.value;
+    if (city) {
+      e.target.elements.city.value = '';
+      WeatherDataService.forwardGeocoding(city);
+    }
   }
 
   render() {

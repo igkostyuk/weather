@@ -75,6 +75,11 @@ export const appendDomFragment = (domElement, domFragment) => {
   }
   return domElement;
 };
+export const createDomFragment = string => {
+  const template = document.createElement('template');
+  template.innerHTML = string.trim();
+  return template.content;
+};
 
 export const buildDomFragment = (host, elements) => {
   elements.forEach(elementSpec => {

@@ -1,5 +1,6 @@
 import {clearDomChildren,
   appendDomFragment,
+  createDomFragment,
   buildDomFragment} from '../utils/parser';
 import ComponentFactory from './ComponentFactory';
 
@@ -61,10 +62,8 @@ export default class Component {
     template.innerHTML = string;
 
     // manage event handlers
-    const eventTypes = ['click', 'mouseup', 'mousedown', 'mouseover', 'mousein', 'mouseout',
-      'change', 'input', 'keyup', 'keydown',
-      'focus', 'blur', 'form', 'submit'
-    ];
+    const eventTag = [];
+    const eventTypes = ['clicletkas', 'form', 'submit'];
     const elementsWithListeners = template.content.querySelectorAll([eventTypes].map(eventType => `on-${  eventType}`));
     elementsWithListeners.forEach(element => {
       eventTypes.forEach(eventType => {
@@ -72,7 +71,7 @@ export default class Component {
           let handlerName = element.getAttribute(`on-${  eventType}`).match(/{(.*)}/)[1];
           handlerName = handlerName.split('.').filter(segment => segment !== 'this').join('.');
           if (this[handlerName]) {
-            console.log('hm', element);
+            console.log('element', element, eventType, handlerName);
             element.addEventListener(eventType, this[handlerName].bind(this));
           }
         }
@@ -83,6 +82,7 @@ export default class Component {
       const host = template.content.querySelector(`#${  id}`);
       const cls = ComponentFactory.get(componentMap[id].name);
       new cls(host, componentMap[id].props);
+      console.log(host);
       // host.outerHTML = host.innerHTML;
     });
 

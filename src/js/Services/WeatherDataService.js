@@ -23,6 +23,8 @@ class WeatherDataService {
 
   // `${this.geocoderBase}${city}${this.geocoderFormat}`
   forwardGeocoding(city = 'Kiev') {
+    this.forecastData.city = city;
+    console.log('this.forecastData.city', this.forecastData.city);
     return this.getData(`${this.geocoderBase}${city}${this.geocoderKey}`)
       .then(response => response.results[0].geometry)
       .then(response => this.geWeatherForecast(response.lat, response.lng));
@@ -31,8 +33,8 @@ class WeatherDataService {
   geWeatherForecast(lat, lng) {
     return this.getData(`${this.corsAnywhere}${this.forecastBase}${this.forecastKey}${lat},${lng}?units=ca`)
       .then(response => {
-        this.forecastData = response;
-        this.subscribers.forEach(subscriber => subscriber(this.forecastData));
+        this.forecastData = Object.assign({}, this.forecastData, response);
+        this.subscribers.forEach(subscriber => subscriber(this.forecastData, this.forecastData.city));
       })
   };
 
