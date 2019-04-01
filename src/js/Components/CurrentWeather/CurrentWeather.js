@@ -2,13 +2,8 @@ import Component from '../../framework/Component';
 import AppState from '../../Services/AppState';
 import ComponentFactory from '../../framework/ComponentFactory';
 import WeatherDataService from '../../Services/WeatherDataService';
+import imageUrl from '../../utils/icons';
 
-
-// list = [
-//   'clear-day', 'clear-night', 'partly-cloudy-day',
-//   'partly-cloudy-night', 'cloudy', 'rain', 'sleet', 'snow', 'wind',
-//   'fog'
-// ];
 
 export default class CurrentWeather extends Component {
   constructor(host, props) {
@@ -29,15 +24,25 @@ export default class CurrentWeather extends Component {
   }
 
 
-  onServerResponse({currently}, city) {
+  onServerResponse(weatherData) {
+    console.log('weatherData', weatherData);
+
+    const {
+      currently,
+      city
+    } = weatherData;
+    const {
+      units
+    } = weatherData.flags;
     if (currently) {
-      currently.date = new Date(currently.time * 1000).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric'
-      });
+      currently.date = new Date(currently.time * 1000)
+        .toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric'
+        });
       currently.temperature = Math.round(currently.temperature);
       currently.city = city;
-      console.log('state', this.state);
+      currently.units = units;
       this.updateState(currently);
     }
   }
@@ -46,7 +51,7 @@ export default class CurrentWeather extends Component {
     return `
   <div class="temp">
   ${this.state.temperature}
-  <span><a>C</a> |<a>F</a></span>
+  ${(this.state.units='ca')?'<span>C |<a>F</a></span>':'<span>C|<a>F</a></span>'}
   </div>
   <div class="right">
     <div class="date">${this.state.date}</div>
@@ -55,7 +60,7 @@ export default class CurrentWeather extends Component {
     <div class="date">${this.state.windSpeed}</div>
   </div>
   <div class="weather-icon">
-    <canvas id="icon1" width="128" height="128"></canvas>
+  <img src="${imageUrl[this.state.icon]}" />
   </div>`
   }
 }

@@ -1,48 +1,29 @@
-import Component from '../../framework/Component.js';
-
-import {WeatherForecastItem} from '../WeatherForecastItem';
+import Component from '../../framework/Component';
+import AppState from '../../Services/AppState';
+import ComponentFactory from '../../framework/ComponentFactory';
+import WeatherDataService from '../../Services/WeatherDataService';
+import imageUrl from '../../utils/icons';
 
 export default class WeatherForecast extends Component {
   constructor(host, props) {
     super(host, props);
+    this.onServerResponse = this.onServerResponse.bind(this);
+    WeatherDataService.subscribeForCurrentWeather(this.onServerResponse);
+  }
+
+  init() {
+    this.state = {
+      temperature: '',
+      icon: '',
+      windSpeed: '',
+      humidity: '',
+      date: '',
+      city: '',
+    };
   }
 
   render() {
-    return [{
-      tag: 'div',
-      classList: ['forcast'],
-      children: [{
-        tag: 'ul',
-        children: [{
-            tag: WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C',
-            },
-          },
-          {
-            tag: WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C',
-            },
-          },
-          {
-            tag: WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C',
-            },
-          },
-          {
-            tag: WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C',
-            },
-          },
-        ],
-      }, ],
-    }, ]
+
   }
 }
+ComponentFactory.register(WeatherForecast);

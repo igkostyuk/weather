@@ -16,6 +16,7 @@ export default class Component {
 
   updateState(stateDelta) {
     this.state = Object.assign({}, this.state, stateDelta);
+    console.log('state', this.state);
     this._render();
   }
 

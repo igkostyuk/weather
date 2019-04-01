@@ -411,6 +411,7 @@ function () {
     key: "updateState",
     value: function updateState(stateDelta) {
       this.state = Object.assign({}, this.state, stateDelta);
+      console.log('state', this.state);
 
       this._render();
     }
@@ -520,9 +521,6 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// const base = 'http://api.openweathermap.org/data/2.5/';
-// const unit = '&units=metric';
-// const key = '&APPID=72e4c511f65e4706ad1a983c6eed3dc9';
 var WeatherDataService =
 /*#__PURE__*/
 function () {
@@ -537,10 +535,7 @@ function () {
     this.corsAnywhere = 'https://cors-anywhere.herokuapp.com/';
     this.forecastData = {};
     this.subscribers = [];
-  } // subscribeForCurrentWeather(callback) {
-  //   this.getCurrentWeather().then(callback);
-  // }
-
+  }
 
   _createClass(WeatherDataService, [{
     key: "getCurrentLocation",
@@ -557,23 +552,22 @@ function () {
 
       var city = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Kiev';
       this.forecastData.city = city;
-      console.log('this.forecastData.city', this.forecastData.city);
       return this.getData("".concat(this.geocoderBase).concat(city).concat(this.geocoderKey)).then(function (response) {
         return response.results[0].geometry;
       }).then(function (response) {
-        return _this.geWeatherForecast(response.lat, response.lng);
+        return _this.getWeatherForecast(response.lat, response.lng);
       });
     }
   }, {
-    key: "geWeatherForecast",
-    value: function geWeatherForecast(lat, lng) {
+    key: "getWeatherForecast",
+    value: function getWeatherForecast(lat, lng) {
       var _this2 = this;
 
       return this.getData("".concat(this.corsAnywhere).concat(this.forecastBase).concat(this.forecastKey).concat(lat, ",").concat(lng, "?units=ca")).then(function (response) {
         _this2.forecastData = Object.assign({}, _this2.forecastData, response);
 
         _this2.subscribers.forEach(function (subscriber) {
-          return subscriber(_this2.forecastData, _this2.forecastData.city);
+          return subscriber(_this2.forecastData);
         });
       });
     }
@@ -760,7 +754,76 @@ Object.defineProperty(exports, "SearchBar", {
 var _SearchBar = _interopRequireDefault(require("./SearchBar"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./SearchBar":"js/Components/SearchBar/SearchBar.js"}],"js/Components/CurrentWeather/CurrentWeather.js":[function(require,module,exports) {
+},{"./SearchBar":"js/Components/SearchBar/SearchBar.js"}],"icons/animated/rainy-7.svg":[function(require,module,exports) {
+module.exports = "/rainy-7.85b77bf6.svg";
+},{}],"icons/animated/rainy-1.svg":[function(require,module,exports) {
+module.exports = "/rainy-1.5978a8f5.svg";
+},{}],"icons/animated/snowy-1.svg":[function(require,module,exports) {
+module.exports = "/snowy-1.731efed1.svg";
+},{}],"icons/animated/thunder.svg":[function(require,module,exports) {
+module.exports = "/thunder.2affda0b.svg";
+},{}],"icons/animated/rainy-2.svg":[function(require,module,exports) {
+module.exports = "/rainy-2.2fce7f92.svg";
+},{}],"icons/animated/cloudy.svg":[function(require,module,exports) {
+module.exports = "/cloudy.17e81980.svg";
+},{}],"icons/animated/day.svg":[function(require,module,exports) {
+module.exports = "/day.1f8fcbf8.svg";
+},{}],"icons/animated/night.svg":[function(require,module,exports) {
+module.exports = "/night.dd49dacc.svg";
+},{}],"icons/animated/cloudy-day-1.svg":[function(require,module,exports) {
+module.exports = "/cloudy-day-1.79e380b2.svg";
+},{}],"icons/animated/cloudy-night-1.svg":[function(require,module,exports) {
+module.exports = "/cloudy-night-1.8e7f3c4f.svg";
+},{}],"js/utils/icons.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _rainy = _interopRequireDefault(require("../../icons/animated/rainy-7.svg"));
+
+var _rainy2 = _interopRequireDefault(require("../../icons/animated/rainy-1.svg"));
+
+var _snowy = _interopRequireDefault(require("../../icons/animated/snowy-1.svg"));
+
+var _thunder = _interopRequireDefault(require("../../icons/animated/thunder.svg"));
+
+var _rainy3 = _interopRequireDefault(require("../../icons/animated/rainy-2.svg"));
+
+var _cloudy = _interopRequireDefault(require("../../icons/animated/cloudy.svg"));
+
+var _day = _interopRequireDefault(require("../../icons/animated/day.svg"));
+
+var _night = _interopRequireDefault(require("../../icons/animated/night.svg"));
+
+var _cloudyDay = _interopRequireDefault(require("../../icons/animated/cloudy-day-1.svg"));
+
+var _cloudyNight = _interopRequireDefault(require("../../icons/animated/cloudy-night-1.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var imageUrl = {
+  'fog': _rainy.default,
+  'rain': _rainy2.default,
+  'snow': _snowy.default,
+  'wind': _thunder.default,
+  'sleet': _rainy3.default,
+  'cloudy': _cloudy.default,
+  'clear-day': _day.default,
+  'clear-night': _night.default,
+  'partly-cloudy-day': _cloudyDay.default,
+  'partly-cloudy-night': _cloudyNight.default
+};
+var _default = imageUrl; // list = [
+//   'clear-day', 'clear-night', 'partly-cloudy-day',
+//   'partly-cloudy-night', 'cloudy', 'rain', 'sleet', 'snow', 'wind',
+//   'fog'
+// ];
+
+exports.default = _default;
+},{"../../icons/animated/rainy-7.svg":"icons/animated/rainy-7.svg","../../icons/animated/rainy-1.svg":"icons/animated/rainy-1.svg","../../icons/animated/snowy-1.svg":"icons/animated/snowy-1.svg","../../icons/animated/thunder.svg":"icons/animated/thunder.svg","../../icons/animated/rainy-2.svg":"icons/animated/rainy-2.svg","../../icons/animated/cloudy.svg":"icons/animated/cloudy.svg","../../icons/animated/day.svg":"icons/animated/day.svg","../../icons/animated/night.svg":"icons/animated/night.svg","../../icons/animated/cloudy-day-1.svg":"icons/animated/cloudy-day-1.svg","../../icons/animated/cloudy-night-1.svg":"icons/animated/cloudy-night-1.svg"}],"js/Components/CurrentWeather/CurrentWeather.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -775,6 +838,8 @@ var _AppState = _interopRequireDefault(require("../../Services/AppState"));
 var _ComponentFactory = _interopRequireDefault(require("../../framework/ComponentFactory"));
 
 var _WeatherDataService = _interopRequireDefault(require("../../Services/WeatherDataService"));
+
+var _icons = _interopRequireDefault(require("../../utils/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -796,11 +861,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-// list = [
-//   'clear-day', 'clear-night', 'partly-cloudy-day',
-//   'partly-cloudy-night', 'cloudy', 'rain', 'sleet', 'snow', 'wind',
-//   'fog'
-// ];
 var CurrentWeather =
 /*#__PURE__*/
 function (_Component) {
@@ -833,8 +893,11 @@ function (_Component) {
     }
   }, {
     key: "onServerResponse",
-    value: function onServerResponse(_ref, city) {
-      var currently = _ref.currently;
+    value: function onServerResponse(weatherData) {
+      console.log('weatherData', weatherData);
+      var currently = weatherData.currently,
+          city = weatherData.city;
+      var units = weatherData.flags.units;
 
       if (currently) {
         currently.date = new Date(currently.time * 1000).toLocaleDateString('en-US', {
@@ -843,14 +906,14 @@ function (_Component) {
         });
         currently.temperature = Math.round(currently.temperature);
         currently.city = city;
-        console.log('state', this.state);
+        currently.units = units;
         this.updateState(currently);
       }
     }
   }, {
     key: "render",
     value: function render() {
-      return "\n  <div class=\"temp\">\n  ".concat(this.state.temperature, "\n  <span><a>C</a> |<a>F</a></span>\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">").concat(this.state.date, "</div>\n    <div class=\"summary\">").concat(this.state.city, "</div>\n    <div class=\"date\">").concat(this.state.humidity, "</div>\n    <div class=\"date\">").concat(this.state.windSpeed, "</div>\n  </div>\n  <div class=\"weather-icon\">\n    <canvas id=\"icon1\" width=\"128\" height=\"128\"></canvas>\n  </div>");
+      return "\n  <div class=\"temp\">\n  ".concat(this.state.temperature, "\n  ").concat((this.state.units = 'ca') ? '<span>C |<a>F</a></span>' : '<span>C|<a>F</a></span>', "\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">").concat(this.state.date, "</div>\n    <div class=\"summary\">").concat(this.state.city, "</div>\n    <div class=\"date\">").concat(this.state.humidity, "</div>\n    <div class=\"date\">").concat(this.state.windSpeed, "</div>\n  </div>\n  <div class=\"weather-icon\">\n  <img src=\"").concat(_icons.default[this.state.icon], "\" />\n  </div>");
     }
   }]);
 
@@ -860,7 +923,7 @@ function (_Component) {
 exports.default = CurrentWeather;
 
 _ComponentFactory.default.register(CurrentWeather);
-},{"../../framework/Component":"js/framework/Component.js","../../Services/AppState":"js/Services/AppState.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../../Services/WeatherDataService":"js/Services/WeatherDataService.js"}],"js/Components/CurrentWeather/index.js":[function(require,module,exports) {
+},{"../../framework/Component":"js/framework/Component.js","../../Services/AppState":"js/Services/AppState.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../../Services/WeatherDataService":"js/Services/WeatherDataService.js","../../utils/icons":"js/utils/icons.js"}],"js/Components/CurrentWeather/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -876,7 +939,7 @@ Object.defineProperty(exports, "CurrentWeather", {
 var _CurrentWeather = _interopRequireDefault(require("./CurrentWeather"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./CurrentWeather":"js/Components/CurrentWeather/CurrentWeather.js"}],"js/Components/WeatherForecastItem/WeatherForecastItem.js":[function(require,module,exports) {
+},{"./CurrentWeather":"js/Components/CurrentWeather/CurrentWeather.js"}],"js/Components/WeatherForecast/WeatherForecast.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -884,7 +947,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _Component2 = _interopRequireDefault(require("../../framework/Component.js"));
+var _Component2 = _interopRequireDefault(require("../../framework/Component"));
+
+var _AppState = _interopRequireDefault(require("../../Services/AppState"));
+
+var _ComponentFactory = _interopRequireDefault(require("../../framework/ComponentFactory"));
+
+var _WeatherDataService = _interopRequireDefault(require("../../Services/WeatherDataService"));
+
+var _icons = _interopRequireDefault(require("../../utils/icons"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -898,94 +969,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var WeatherForecastItem =
-/*#__PURE__*/
-function (_Component) {
-  _inherits(WeatherForecastItem, _Component);
-
-  function WeatherForecastItem(host, props) {
-    _classCallCheck(this, WeatherForecastItem);
-
-    return _possibleConstructorReturn(this, _getPrototypeOf(WeatherForecastItem).call(this, host, props));
-  }
-
-  _createClass(WeatherForecastItem, [{
-    key: "render",
-    value: function render() {
-      return [{
-        tag: 'li',
-        children: [{
-          tag: 'h4',
-          content: 'mon'
-        }, {
-          tag: 'i',
-          content: 'rain'
-        }, {
-          tag: 'p',
-          content: '22'
-        }, {
-          tag: 'p',
-          content: '12'
-        }]
-      }];
-    }
-  }]);
-
-  return WeatherForecastItem;
-}(_Component2.default);
-
-exports.default = WeatherForecastItem;
-},{"../../framework/Component.js":"js/framework/Component.js"}],"js/Components/WeatherForecastItem/index.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-Object.defineProperty(exports, "WeatherForecastItem", {
-  enumerable: true,
-  get: function () {
-    return _WeatherForecastItem.default;
-  }
-});
-
-var _WeatherForecastItem = _interopRequireDefault(require("./WeatherForecastItem"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./WeatherForecastItem":"js/Components/WeatherForecastItem/WeatherForecastItem.js"}],"js/Components/WeatherForecast/WeatherForecast.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _Component2 = _interopRequireDefault(require("../../framework/Component.js"));
-
-var _WeatherForecastItem = require("../WeatherForecastItem");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
@@ -997,54 +983,42 @@ function (_Component) {
   _inherits(WeatherForecast, _Component);
 
   function WeatherForecast(host, props) {
+    var _this;
+
     _classCallCheck(this, WeatherForecast);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(WeatherForecast).call(this, host, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(WeatherForecast).call(this, host, props));
+    _this.onServerResponse = _this.onServerResponse.bind(_assertThisInitialized(_this));
+
+    _WeatherDataService.default.subscribeForCurrentWeather(_this.onServerResponse);
+
+    return _this;
   }
 
   _createClass(WeatherForecast, [{
-    key: "render",
-    value: function render() {
-      return [{
-        tag: 'div',
-        classList: ['forcast'],
-        children: [{
-          tag: 'ul',
-          children: [{
-            tag: _WeatherForecastItem.WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C'
-            }
-          }, {
-            tag: _WeatherForecastItem.WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C'
-            }
-          }, {
-            tag: _WeatherForecastItem.WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C'
-            }
-          }, {
-            tag: _WeatherForecastItem.WeatherForecastItem,
-            props: {
-              temperature: 18,
-              unit: 'C'
-            }
-          }]
-        }]
-      }];
+    key: "init",
+    value: function init() {
+      this.state = {
+        temperature: '',
+        icon: '',
+        windSpeed: '',
+        humidity: '',
+        date: '',
+        city: ''
+      };
     }
+  }, {
+    key: "render",
+    value: function render() {}
   }]);
 
   return WeatherForecast;
 }(_Component2.default);
 
 exports.default = WeatherForecast;
-},{"../../framework/Component.js":"js/framework/Component.js","../WeatherForecastItem":"js/Components/WeatherForecastItem/index.js"}],"js/Components/WeatherForecast/index.js":[function(require,module,exports) {
+
+_ComponentFactory.default.register(WeatherForecast);
+},{"../../framework/Component":"js/framework/Component.js","../../Services/AppState":"js/Services/AppState.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../../Services/WeatherDataService":"js/Services/WeatherDataService.js","../../utils/icons":"js/utils/icons.js"}],"js/Components/WeatherForecast/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1199,7 +1173,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52760" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54022" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

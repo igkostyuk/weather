@@ -1,7 +1,3 @@
-// const base = 'http://api.openweathermap.org/data/2.5/';
-// const unit = '&units=metric';
-// const key = '&APPID=72e4c511f65e4706ad1a983c6eed3dc9';
-
 class WeatherDataService {
   constructor() {
     this.geocoderBase = 'https://api.opencagedata.com/geocode/v1/json?q='
@@ -14,9 +10,7 @@ class WeatherDataService {
     this.subscribers = [];
   }
 
-  // subscribeForCurrentWeather(callback) {
-  //   this.getCurrentWeather().then(callback);
-  // }
+
   getCurrentLocation() {
     return this.getData(this.currentLocationBase).then(response => response.city);
   }
@@ -24,17 +18,16 @@ class WeatherDataService {
   // `${this.geocoderBase}${city}${this.geocoderFormat}`
   forwardGeocoding(city = 'Kiev') {
     this.forecastData.city = city;
-    console.log('this.forecastData.city', this.forecastData.city);
     return this.getData(`${this.geocoderBase}${city}${this.geocoderKey}`)
       .then(response => response.results[0].geometry)
-      .then(response => this.geWeatherForecast(response.lat, response.lng));
+      .then(response => this.getWeatherForecast(response.lat, response.lng));
   }
 
-  geWeatherForecast(lat, lng) {
+  getWeatherForecast(lat, lng) {
     return this.getData(`${this.corsAnywhere}${this.forecastBase}${this.forecastKey}${lat},${lng}?units=ca`)
       .then(response => {
         this.forecastData = Object.assign({}, this.forecastData, response);
-        this.subscribers.forEach(subscriber => subscriber(this.forecastData, this.forecastData.city));
+        this.subscribers.forEach(subscriber => subscriber(this.forecastData));
       })
   };
 
