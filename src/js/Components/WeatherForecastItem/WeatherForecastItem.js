@@ -1,4 +1,6 @@
-import Component from '../../framework/Component.js';
+import Component from '../../framework/Component';
+import ComponentFactory from '../../framework/ComponentFactory';
+import imageUrl from '../../utils/icons';
 
 export default class WeatherForecastItem extends Component {
   constructor(host, props) {
@@ -6,25 +8,12 @@ export default class WeatherForecastItem extends Component {
   }
 
   render() {
-    return [{
-      tag: 'li',
-      children: [{
-          tag: 'h4',
-          content: 'mon'
-        },
-        {
-          tag: 'i',
-          content: 'rain'
-        },
-        {
-          tag: 'p',
-          content: '22'
-        },
-        {
-          tag: 'p',
-          content: '12'
-        },
-      ],
-    }];
+    return `
+  <li>
+    <h4>${this.props.weekday}</h4>
+    <p>${this.props.temperatureHigh}</p>
+    <p>${this.props.temperatureLow}</p>
+  </li>`
   }
 }
+ComponentFactory.register(WeatherForecastItem);

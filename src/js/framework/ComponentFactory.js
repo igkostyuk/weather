@@ -4,7 +4,7 @@ const ComponentFactory = {
   get: componentClassName => ComponentFactory.mappings[componentClassName],
 };
 export default ComponentFactory;
-
+console.log(ComponentFactory);
 /*
  Every component will need:
   1) import ComponentFactory from "../framework/ComponentFactory";

@@ -1,8 +1,17 @@
 import Component from '../../framework/Component';
 import ComponentFactory from '../../framework/ComponentFactory';
-import {SearchBar} from '../SearchBar';
-import {CurrentWeather} from '../CurrentWeather';
-import {WeatherForecast} from '../WeatherForecast';
+import {
+  SearchBar
+} from '../SearchBar';
+import {
+  CurrentWeather
+} from '../CurrentWeather';
+import {
+  WeatherForecast
+} from '../WeatherForecast';
+import {
+  WeatherForecastItem
+} from '../WeatherForecastItem';
 
 
 export default class App extends Component {
@@ -38,6 +47,9 @@ export default class App extends Component {
       <div class="details">
       <CurrentWeather/>
       </div>
+    <div class="forcast">
+      <WeatherForecast/>
+    </div>
     </div>
     `;
   }

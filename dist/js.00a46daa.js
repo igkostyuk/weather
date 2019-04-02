@@ -206,13 +206,13 @@ var ComponentFactory = {
   }
 };
 var _default = ComponentFactory;
+exports.default = _default;
+console.log(ComponentFactory);
 /*
  Every component will need:
   1) import ComponentFactory from "../framework/ComponentFactory";
   2) ComponentFactory.register(ComponentClass); // to register component class with factory
  */
-
-exports.default = _default;
 },{}],"js/utils/parser.js":[function(require,module,exports) {
 "use strict";
 
@@ -999,17 +999,33 @@ function (_Component) {
     key: "init",
     value: function init() {
       this.state = {
-        temperature: '',
-        icon: '',
-        windSpeed: '',
-        humidity: '',
-        date: '',
-        city: ''
+        data: [{
+          temperatureHigh: '',
+          temperatureLow: '',
+          icon: ''
+        }]
       };
     }
   }, {
+    key: "onServerResponse",
+    value: function onServerResponse(_ref) {
+      var daily = _ref.daily;
+      daily.data.map(function (day) {
+        day.weekday = new Date(day.time * 1000).toLocaleDateString('en-US', {
+          weekday: 'short'
+        });
+      });
+      this.updateState(daily);
+    }
+  }, {
     key: "render",
-    value: function render() {}
+    value: function render() {
+      var data = this.state.data.map(function (day) {
+        return "\n      <WeatherForecastItem weekday=".concat(day.weekday, " icon=").concat(day.icon, " temperatureHigh=").concat(day.temperatureHigh, " temperatureLow=").concat(day.temperatureLow, "/>");
+      }).join(' ');
+      console.log('data', data);
+      return "<ul>".concat(data, "</ul>");
+    }
   }]);
 
   return WeatherForecast;
@@ -1034,7 +1050,81 @@ Object.defineProperty(exports, "WeatherForecast", {
 var _WeatherForecast = _interopRequireDefault(require("./WeatherForecast"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./WeatherForecast":"js/Components/WeatherForecast/WeatherForecast.js"}],"js/Components/App/App.js":[function(require,module,exports) {
+},{"./WeatherForecast":"js/Components/WeatherForecast/WeatherForecast.js"}],"js/Components/WeatherForecastItem/WeatherForecastItem.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _Component2 = _interopRequireDefault(require("../../framework/Component"));
+
+var _ComponentFactory = _interopRequireDefault(require("../../framework/ComponentFactory"));
+
+var _icons = _interopRequireDefault(require("../../utils/icons"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var WeatherForecastItem =
+/*#__PURE__*/
+function (_Component) {
+  _inherits(WeatherForecastItem, _Component);
+
+  function WeatherForecastItem(host, props) {
+    _classCallCheck(this, WeatherForecastItem);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(WeatherForecastItem).call(this, host, props));
+  }
+
+  _createClass(WeatherForecastItem, [{
+    key: "render",
+    value: function render() {
+      return "\n  <li>\n    <h4>".concat(this.props.weekday, "</h4>\n    <p>").concat(this.props.temperatureHigh, "</p>\n    <p>").concat(this.props.temperatureLow, "</p>\n  </li>");
+    }
+  }]);
+
+  return WeatherForecastItem;
+}(_Component2.default);
+
+exports.default = WeatherForecastItem;
+
+_ComponentFactory.default.register(WeatherForecastItem);
+},{"../../framework/Component":"js/framework/Component.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../../utils/icons":"js/utils/icons.js"}],"js/Components/WeatherForecastItem/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+Object.defineProperty(exports, "WeatherForecastItem", {
+  enumerable: true,
+  get: function () {
+    return _WeatherForecastItem.default;
+  }
+});
+
+var _WeatherForecastItem = _interopRequireDefault(require("./WeatherForecastItem"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+},{"./WeatherForecastItem":"js/Components/WeatherForecastItem/WeatherForecastItem.js"}],"js/Components/App/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1051,6 +1141,8 @@ var _SearchBar = require("../SearchBar");
 var _CurrentWeather = require("../CurrentWeather");
 
 var _WeatherForecast = require("../WeatherForecast");
+
+var _WeatherForecastItem = require("../WeatherForecastItem");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1109,7 +1201,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return "\n    <nav class=\"search__container\">\n      <SearchBar/>\n    </nav>\n    <div id=\"card\" class=\"weather\">\n      <div class=\"details\">\n      <CurrentWeather/>\n      </div>\n    </div>\n    ";
+      return "\n    <nav class=\"search__container\">\n      <SearchBar/>\n    </nav>\n    <div id=\"card\" class=\"weather\">\n      <div class=\"details\">\n      <CurrentWeather/>\n      </div>\n    <div class=\"forcast\">\n      <WeatherForecast/>\n    </div>\n    </div>\n    ";
     }
   }]);
 
@@ -1118,7 +1210,7 @@ function (_Component) {
 
 
 exports.default = App;
-},{"../../framework/Component":"js/framework/Component.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../SearchBar":"js/Components/SearchBar/index.js","../CurrentWeather":"js/Components/CurrentWeather/index.js","../WeatherForecast":"js/Components/WeatherForecast/index.js"}],"js/Components/App/index.js":[function(require,module,exports) {
+},{"../../framework/Component":"js/framework/Component.js","../../framework/ComponentFactory":"js/framework/ComponentFactory.js","../SearchBar":"js/Components/SearchBar/index.js","../CurrentWeather":"js/Components/CurrentWeather/index.js","../WeatherForecast":"js/Components/WeatherForecast/index.js","../WeatherForecastItem":"js/Components/WeatherForecastItem/index.js"}],"js/Components/App/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1173,7 +1265,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54022" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57559" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
