@@ -143,13 +143,13 @@ body,
 }
 .weather .details .weather-icon {
   position: absolute;
-  top: 40px;
-  left: 30px;
-  font-size: 60px;
+  top: 70px;
+  left: 80px;
+  font-size: 50px;
   line-height: 60px;
 }
 .weather .details .weather-icon img {
-  width: 200px;
+  width: 150px;
 }
 .weather .forcast {
   align-self: flex-end;
