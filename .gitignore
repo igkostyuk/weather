@@ -11,3 +11,4 @@ Thumbs.db
 .cache/
 node_modules
 dist/
+node_modules/
