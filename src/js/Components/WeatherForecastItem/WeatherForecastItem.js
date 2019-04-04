@@ -1,8 +1,6 @@
 import Component from '../../framework/Component';
 import ComponentFactory from '../../framework/ComponentFactory';
-import {
-  animatedImageUrl
-} from '../../utils/icons';
+import { animatedImageUrl } from '../../utils/icons';
 
 export default class WeatherForecastItem extends Component {
   constructor(host, props) {
@@ -15,7 +13,7 @@ export default class WeatherForecastItem extends Component {
     <img src="${animatedImageUrl[this.props.icon]}" />
     <p>${this.props.temperatureHigh}</p>
     <p>${this.props.temperatureLow}</p>
-  `
+  `;
   }
 }
 ComponentFactory.register(WeatherForecastItem);

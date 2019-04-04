@@ -1,4 +1,1 @@
-export {
-  default as CurrentWeather
-}
-from './CurrentWeather';
+export { default as CurrentWeather } from './CurrentWeather';

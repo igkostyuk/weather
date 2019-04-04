@@ -1,4 +1,1 @@
-export {
-  default as SearchHistory
-}
-from './SearchHistory';
+export { default as SearchHistory } from './SearchHistory';

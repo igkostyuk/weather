@@ -1,4 +1,1 @@
-export {
-  default as WeatherForecast
-}
-from './WeatherForecast';
+export { default as WeatherForecast } from './WeatherForecast';

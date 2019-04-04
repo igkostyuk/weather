@@ -3,7 +3,6 @@ import ComponentFactory from '../../framework/ComponentFactory';
 import WeatherDataService from '../../Services/WeatherDataService';
 import AppState from '../../Services/AppState';
 
-
 export default class SearchBar extends Component {
   constructor(host, props) {
     super(host, props);
@@ -32,7 +31,7 @@ export default class SearchBar extends Component {
     return ` <form on-Submit={this.onSubmit}>
                <input class="search__input " name="city" placeholder="city" type="text" value="" />
                <button class="search__button" type="submit"/>search</button>
-             </form>`
+             </form>`;
   }
 }
 

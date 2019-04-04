@@ -48,6 +48,12 @@
     },
     "rules": {
       "allowTernary": true,
+      "object-property-newline": [
+        2,
+        {
+          "allowMultiplePropertiesPerLine": true
+        }
+      ],
       "optimize-regex/optimize-regex": "warn",
       "sonarjs/cognitive-complexity": [
         "error",
