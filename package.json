@@ -4,12 +4,9 @@
   "description": "",
   "main": ".src/index.html",
   "scripts": {
-    "start": "parcel ./src/index.html",
-    "prebuild-dev": "shx rm -rf dist/*",
-    "build-dev": "parcel build ./src/index.html --no-minify --public-url ./",
-    "prebuild": "shx rm -rf dist/*",
-    "build": "parcel build ./src/index.html --public-url ./",
-    "push-gh-pages": "push-dir --dir=dist --branch=gh-pages --cleanup --verbose"
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html --out-dir dist/ --public-url ./",
+    "push-dist": "push-dir --dir=dist/ --branch=gh-pages"
   },
   "author": "",
   "license": "ISC",
