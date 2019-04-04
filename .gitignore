@@ -7,6 +7,6 @@
 *.psd
 npm-debug.*
 Thumbs.db
-dist/
 .vscode/
 .cache/
+node_modules
