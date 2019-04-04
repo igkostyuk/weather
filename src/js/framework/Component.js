@@ -1,7 +1,9 @@
-import {clearDomChildren,
+import {
+  clearDomChildren,
   appendDomFragment,
   createDomFragment,
-  buildDomFragment} from '../utils/parser';
+  buildDomFragment
+} from '../utils/parser';
 import ComponentFactory from './ComponentFactory';
 
 export default class Component {
@@ -83,8 +85,6 @@ export default class Component {
       const host = template.content.querySelector(`#${  id}`);
       const cls = ComponentFactory.get(componentMap[id].name);
       new cls(host, componentMap[id].props);
-      console.log(host);
-      // host.outerHTML = host.innerHTML;
     });
 
     return template.content;

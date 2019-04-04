@@ -12,17 +12,10 @@ export default class SearchBar extends Component {
   }
 
   init() {
-    this.state = {
-      value: this.props.value * 2,
-      quantifier: 7,
-    };
+    this.state = {};
   }
 
   updateMyself(subState) {
-    // .... transform response
-
-
-    // do update
     this.updateState(subState);
   }
 
@@ -31,7 +24,7 @@ export default class SearchBar extends Component {
     const city = e.target.elements.city.value;
     if (city) {
       e.target.elements.city.value = '';
-      WeatherDataService.forwardGeocoding(city);
+      WeatherDataService.setCity(city);
     }
   }
 

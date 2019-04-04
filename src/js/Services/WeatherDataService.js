@@ -6,19 +6,26 @@ class WeatherDataService {
     this.geocoderKey = '&key=39b7025dc04d4a47a61c8866819b5161';
     this.forecastKey = 'f5bcd9de3734de86a2d47a58d91793ab/';
     this.corsAnywhere = 'https://cors-anywhere.herokuapp.com/'
-    this.forecastData = {};
+    this.forecastData = {
+      city: '',
+      latitude: '',
+      longitude: '',
+    };
     this.subscribers = [];
   }
 
-
-  getCurrentLocation() {
-    return this.getData(this.currentLocationBase).then(response => response.city);
+  setCity(city = 'Kiev') {
+    this.forecastData.city = city;
+    this.getForwardGeocoding();
   }
 
-  // `${this.geocoderBase}${city}${this.geocoderFormat}`
-  forwardGeocoding(city = 'Kiev') {
-    this.forecastData.city = city;
-    return this.getData(`${this.geocoderBase}${city}${this.geocoderKey}`)
+  getCurrentLocation() {
+    this.getData(this.currentLocationBase)
+      .then(response => this.getWeatherForecast(response.latitude, response.longitude));
+  }
+
+  getForwardGeocoding() {
+    return this.getData(`${this.geocoderBase}${this.forecastData.city}${this.geocoderKey}`)
       .then(response => response.results[0].geometry)
       .then(response => this.getWeatherForecast(response.lat, response.lng));
   }

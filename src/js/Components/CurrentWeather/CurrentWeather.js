@@ -2,7 +2,9 @@ import Component from '../../framework/Component';
 import AppState from '../../Services/AppState';
 import ComponentFactory from '../../framework/ComponentFactory';
 import WeatherDataService from '../../Services/WeatherDataService';
-import imageUrl from '../../utils/icons';
+import {
+  animatedImageUrl
+} from '../../utils/icons';
 
 
 export default class CurrentWeather extends Component {
@@ -21,12 +23,13 @@ export default class CurrentWeather extends Component {
       date: '',
       city: '',
     };
+    if (this.state.city === '') {
+      WeatherDataService.getCurrentLocation();
+    }
   }
 
 
   onServerResponse(weatherData) {
-    console.log('weatherData', weatherData);
-
     const {
       currently,
       city
@@ -60,7 +63,7 @@ export default class CurrentWeather extends Component {
     <div class="date">${this.state.windSpeed}</div>
   </div>
   <div class="weather-icon">
-  <img src="${imageUrl[this.state.icon]}" />
+  <img src="${animatedImageUrl[this.state.icon]}" />
   </div>`
   }
 }

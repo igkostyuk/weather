@@ -497,7 +497,6 @@ function () {
         var cls = _ComponentFactory.default.get(componentMap[id].name);
 
         new cls(host, componentMap[id].props);
-        console.log(host); // host.outerHTML = host.innerHTML;
       });
       return template.content;
     }
@@ -533,41 +532,51 @@ function () {
     this.geocoderKey = '&key=39b7025dc04d4a47a61c8866819b5161';
     this.forecastKey = 'f5bcd9de3734de86a2d47a58d91793ab/';
     this.corsAnywhere = 'https://cors-anywhere.herokuapp.com/';
-    this.forecastData = {};
+    this.forecastData = {
+      city: '',
+      latitude: '',
+      longitude: ''
+    };
     this.subscribers = [];
   }
 
   _createClass(WeatherDataService, [{
-    key: "getCurrentLocation",
-    value: function getCurrentLocation() {
-      return this.getData(this.currentLocationBase).then(function (response) {
-        return response.city;
-      });
-    } // `${this.geocoderBase}${city}${this.geocoderFormat}`
-
-  }, {
-    key: "forwardGeocoding",
-    value: function forwardGeocoding() {
-      var _this = this;
-
+    key: "setCity",
+    value: function setCity() {
       var city = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Kiev';
       this.forecastData.city = city;
-      return this.getData("".concat(this.geocoderBase).concat(city).concat(this.geocoderKey)).then(function (response) {
+      this.getForwardGeocoding();
+    }
+  }, {
+    key: "getCurrentLocation",
+    value: function getCurrentLocation() {
+      var _this = this;
+
+      this.getData(this.currentLocationBase).then(function (response) {
+        return _this.getWeatherForecast(response.latitude, response.longitude);
+      });
+    }
+  }, {
+    key: "getForwardGeocoding",
+    value: function getForwardGeocoding() {
+      var _this2 = this;
+
+      return this.getData("".concat(this.geocoderBase).concat(this.forecastData.city).concat(this.geocoderKey)).then(function (response) {
         return response.results[0].geometry;
       }).then(function (response) {
-        return _this.getWeatherForecast(response.lat, response.lng);
+        return _this2.getWeatherForecast(response.lat, response.lng);
       });
     }
   }, {
     key: "getWeatherForecast",
     value: function getWeatherForecast(lat, lng) {
-      var _this2 = this;
+      var _this3 = this;
 
       return this.getData("".concat(this.corsAnywhere).concat(this.forecastBase).concat(this.forecastKey).concat(lat, ",").concat(lng, "?units=ca")).then(function (response) {
-        _this2.forecastData = Object.assign({}, _this2.forecastData, response);
+        _this3.forecastData = Object.assign({}, _this3.forecastData, response);
 
-        _this2.subscribers.forEach(function (subscriber) {
-          return subscriber(_this2.forecastData);
+        _this3.subscribers.forEach(function (subscriber) {
+          return subscriber(_this3.forecastData);
         });
       });
     }
@@ -700,16 +709,11 @@ function (_Component) {
   _createClass(SearchBar, [{
     key: "init",
     value: function init() {
-      this.state = {
-        value: this.props.value * 2,
-        quantifier: 7
-      };
+      this.state = {};
     }
   }, {
     key: "updateMyself",
     value: function updateMyself(subState) {
-      // .... transform response
-      // do update
       this.updateState(subState);
     }
   }, {
@@ -721,7 +725,7 @@ function (_Component) {
       if (city) {
         e.target.elements.city.value = '';
 
-        _WeatherDataService.default.forwardGeocoding(city);
+        _WeatherDataService.default.setCity(city);
       }
     }
   }, {
@@ -754,76 +758,123 @@ Object.defineProperty(exports, "SearchBar", {
 var _SearchBar = _interopRequireDefault(require("./SearchBar"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-},{"./SearchBar":"js/Components/SearchBar/SearchBar.js"}],"icons/animated/rainy-7.svg":[function(require,module,exports) {
-module.exports = "/rainy-7.85b77bf6.svg";
-},{}],"icons/animated/rainy-1.svg":[function(require,module,exports) {
-module.exports = "/rainy-1.5978a8f5.svg";
-},{}],"icons/animated/snowy-1.svg":[function(require,module,exports) {
-module.exports = "/snowy-1.731efed1.svg";
-},{}],"icons/animated/thunder.svg":[function(require,module,exports) {
-module.exports = "/thunder.2affda0b.svg";
-},{}],"icons/animated/rainy-2.svg":[function(require,module,exports) {
-module.exports = "/rainy-2.2fce7f92.svg";
-},{}],"icons/animated/cloudy.svg":[function(require,module,exports) {
-module.exports = "/cloudy.17e81980.svg";
-},{}],"icons/animated/day.svg":[function(require,module,exports) {
-module.exports = "/day.1f8fcbf8.svg";
-},{}],"icons/animated/night.svg":[function(require,module,exports) {
-module.exports = "/night.dd49dacc.svg";
-},{}],"icons/animated/cloudy-day-1.svg":[function(require,module,exports) {
-module.exports = "/cloudy-day-1.79e380b2.svg";
-},{}],"icons/animated/cloudy-night-1.svg":[function(require,module,exports) {
-module.exports = "/cloudy-night-1.8e7f3c4f.svg";
+},{"./SearchBar":"js/Components/SearchBar/SearchBar.js"}],"icons/wi-fog.svg":[function(require,module,exports) {
+module.exports = "/wi-fog.65af1738.svg";
+},{}],"icons/wi-rain.svg":[function(require,module,exports) {
+module.exports = "/wi-rain.dcdbd52f.svg";
+},{}],"icons/wi-snow.svg":[function(require,module,exports) {
+module.exports = "/wi-snow.36ff4f60.svg";
+},{}],"icons/wi-strong-wind.svg":[function(require,module,exports) {
+module.exports = "/wi-strong-wind.94710dde.svg";
+},{}],"icons/wi-sleet.svg":[function(require,module,exports) {
+module.exports = "/wi-sleet.f95112b1.svg";
+},{}],"icons/wi-cloud.svg":[function(require,module,exports) {
+module.exports = "/wi-cloud.2992b19c.svg";
+},{}],"icons/wi-day-sunny.svg":[function(require,module,exports) {
+module.exports = "/wi-day-sunny.9c3b25ac.svg";
+},{}],"icons/wi-night-clear.svg":[function(require,module,exports) {
+module.exports = "/wi-night-clear.13aed30e.svg";
+},{}],"icons/wi-day-cloudy.svg":[function(require,module,exports) {
+module.exports = "/wi-day-cloudy.8ee111ff.svg";
+},{}],"icons/wi-night-alt-cloudy.svg":[function(require,module,exports) {
+module.exports = "/wi-night-alt-cloudy.6dcffe5e.svg";
+},{}],"icons/animated-fog.svg":[function(require,module,exports) {
+module.exports = "/animated-fog.c9d83596.svg";
+},{}],"icons/animated-rain.svg":[function(require,module,exports) {
+module.exports = "/animated-rain.367bc039.svg";
+},{}],"icons/animated-snow.svg":[function(require,module,exports) {
+module.exports = "/animated-snow.54619640.svg";
+},{}],"icons/animated-wind.svg":[function(require,module,exports) {
+module.exports = "/animated-wind.1caaf726.svg";
+},{}],"icons/animated-sleet.svg":[function(require,module,exports) {
+module.exports = "/animated-sleet.9ac39f87.svg";
+},{}],"icons/animated-cloudy.svg":[function(require,module,exports) {
+module.exports = "/animated-cloudy.1df86445.svg";
+},{}],"icons/animated-sunny.svg":[function(require,module,exports) {
+module.exports = "/animated-sunny.e5dc119e.svg";
+},{}],"icons/animated-clear-night.svg":[function(require,module,exports) {
+module.exports = "/animated-clear-night.42d6e3b0.svg";
+},{}],"icons/animated-partly-cloudy-day.svg":[function(require,module,exports) {
+module.exports = "/animated-partly-cloudy-day.0e590461.svg";
+},{}],"icons/animated-partly-cloudy-night.svg":[function(require,module,exports) {
+module.exports = "/animated-partly-cloudy-night.571832d9.svg";
 },{}],"js/utils/icons.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.animatedImageUrl = exports.imageUrl = void 0;
 
-var _rainy = _interopRequireDefault(require("../../icons/animated/rainy-7.svg"));
+var _wiFog = _interopRequireDefault(require("../../icons/wi-fog.svg"));
 
-var _rainy2 = _interopRequireDefault(require("../../icons/animated/rainy-1.svg"));
+var _wiRain = _interopRequireDefault(require("../../icons/wi-rain.svg"));
 
-var _snowy = _interopRequireDefault(require("../../icons/animated/snowy-1.svg"));
+var _wiSnow = _interopRequireDefault(require("../../icons/wi-snow.svg"));
 
-var _thunder = _interopRequireDefault(require("../../icons/animated/thunder.svg"));
+var _wiStrongWind = _interopRequireDefault(require("../../icons/wi-strong-wind.svg"));
 
-var _rainy3 = _interopRequireDefault(require("../../icons/animated/rainy-2.svg"));
+var _wiSleet = _interopRequireDefault(require("../../icons/wi-sleet.svg"));
 
-var _cloudy = _interopRequireDefault(require("../../icons/animated/cloudy.svg"));
+var _wiCloud = _interopRequireDefault(require("../../icons/wi-cloud.svg"));
 
-var _day = _interopRequireDefault(require("../../icons/animated/day.svg"));
+var _wiDaySunny = _interopRequireDefault(require("../../icons/wi-day-sunny.svg"));
 
-var _night = _interopRequireDefault(require("../../icons/animated/night.svg"));
+var _wiNightClear = _interopRequireDefault(require("../../icons/wi-night-clear.svg"));
 
-var _cloudyDay = _interopRequireDefault(require("../../icons/animated/cloudy-day-1.svg"));
+var _wiDayCloudy = _interopRequireDefault(require("../../icons/wi-day-cloudy.svg"));
 
-var _cloudyNight = _interopRequireDefault(require("../../icons/animated/cloudy-night-1.svg"));
+var _wiNightAltCloudy = _interopRequireDefault(require("../../icons/wi-night-alt-cloudy.svg"));
+
+var _animatedFog = _interopRequireDefault(require("../../icons/animated-fog.svg"));
+
+var _animatedRain = _interopRequireDefault(require("../../icons/animated-rain.svg"));
+
+var _animatedSnow = _interopRequireDefault(require("../../icons/animated-snow.svg"));
+
+var _animatedWind = _interopRequireDefault(require("../../icons/animated-wind.svg"));
+
+var _animatedSleet = _interopRequireDefault(require("../../icons/animated-sleet.svg"));
+
+var _animatedCloudy = _interopRequireDefault(require("../../icons/animated-cloudy.svg"));
+
+var _animatedSunny = _interopRequireDefault(require("../../icons/animated-sunny.svg"));
+
+var _animatedClearNight = _interopRequireDefault(require("../../icons/animated-clear-night.svg"));
+
+var _animatedPartlyCloudyDay = _interopRequireDefault(require("../../icons/animated-partly-cloudy-day.svg"));
+
+var _animatedPartlyCloudyNight = _interopRequireDefault(require("../../icons/animated-partly-cloudy-night.svg"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var imageUrl = {
-  'fog': _rainy.default,
-  'rain': _rainy2.default,
-  'snow': _snowy.default,
-  'wind': _thunder.default,
-  'sleet': _rainy3.default,
-  'cloudy': _cloudy.default,
-  'clear-day': _day.default,
-  'clear-night': _night.default,
-  'partly-cloudy-day': _cloudyDay.default,
-  'partly-cloudy-night': _cloudyNight.default
+  'fog': _wiFog.default,
+  'rain': _wiRain.default,
+  'snow': _wiSnow.default,
+  'wind': _wiStrongWind.default,
+  'sleet': _wiSleet.default,
+  'cloudy': _wiCloud.default,
+  'clear-day': _wiDaySunny.default,
+  'clear-night': _wiNightClear.default,
+  'partly-cloudy-day': _wiDayCloudy.default,
+  'partly-cloudy-night': _wiNightAltCloudy.default
 };
-var _default = imageUrl; // list = [
-//   'clear-day', 'clear-night', 'partly-cloudy-day',
-//   'partly-cloudy-night', 'cloudy', 'rain', 'sleet', 'snow', 'wind',
-//   'fog'
-// ];
-
-exports.default = _default;
-},{"../../icons/animated/rainy-7.svg":"icons/animated/rainy-7.svg","../../icons/animated/rainy-1.svg":"icons/animated/rainy-1.svg","../../icons/animated/snowy-1.svg":"icons/animated/snowy-1.svg","../../icons/animated/thunder.svg":"icons/animated/thunder.svg","../../icons/animated/rainy-2.svg":"icons/animated/rainy-2.svg","../../icons/animated/cloudy.svg":"icons/animated/cloudy.svg","../../icons/animated/day.svg":"icons/animated/day.svg","../../icons/animated/night.svg":"icons/animated/night.svg","../../icons/animated/cloudy-day-1.svg":"icons/animated/cloudy-day-1.svg","../../icons/animated/cloudy-night-1.svg":"icons/animated/cloudy-night-1.svg"}],"js/Components/CurrentWeather/CurrentWeather.js":[function(require,module,exports) {
+exports.imageUrl = imageUrl;
+var animatedImageUrl = {
+  'fog': _animatedFog.default,
+  'rain': _animatedRain.default,
+  'snow': _animatedSnow.default,
+  'wind': _animatedWind.default,
+  'sleet': _animatedSleet.default,
+  'cloudy': _animatedCloudy.default,
+  'clear-day': _animatedSunny.default,
+  'clear-night': _animatedClearNight.default,
+  'partly-cloudy-day': _animatedPartlyCloudyDay.default,
+  'partly-cloudy-night': _animatedPartlyCloudyNight.default
+};
+exports.animatedImageUrl = animatedImageUrl;
+},{"../../icons/wi-fog.svg":"icons/wi-fog.svg","../../icons/wi-rain.svg":"icons/wi-rain.svg","../../icons/wi-snow.svg":"icons/wi-snow.svg","../../icons/wi-strong-wind.svg":"icons/wi-strong-wind.svg","../../icons/wi-sleet.svg":"icons/wi-sleet.svg","../../icons/wi-cloud.svg":"icons/wi-cloud.svg","../../icons/wi-day-sunny.svg":"icons/wi-day-sunny.svg","../../icons/wi-night-clear.svg":"icons/wi-night-clear.svg","../../icons/wi-day-cloudy.svg":"icons/wi-day-cloudy.svg","../../icons/wi-night-alt-cloudy.svg":"icons/wi-night-alt-cloudy.svg","../../icons/animated-fog.svg":"icons/animated-fog.svg","../../icons/animated-rain.svg":"icons/animated-rain.svg","../../icons/animated-snow.svg":"icons/animated-snow.svg","../../icons/animated-wind.svg":"icons/animated-wind.svg","../../icons/animated-sleet.svg":"icons/animated-sleet.svg","../../icons/animated-cloudy.svg":"icons/animated-cloudy.svg","../../icons/animated-sunny.svg":"icons/animated-sunny.svg","../../icons/animated-clear-night.svg":"icons/animated-clear-night.svg","../../icons/animated-partly-cloudy-day.svg":"icons/animated-partly-cloudy-day.svg","../../icons/animated-partly-cloudy-night.svg":"icons/animated-partly-cloudy-night.svg"}],"js/Components/CurrentWeather/CurrentWeather.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -839,7 +890,7 @@ var _ComponentFactory = _interopRequireDefault(require("../../framework/Componen
 
 var _WeatherDataService = _interopRequireDefault(require("../../Services/WeatherDataService"));
 
-var _icons = _interopRequireDefault(require("../../utils/icons"));
+var _icons = require("../../utils/icons");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -890,11 +941,14 @@ function (_Component) {
         date: '',
         city: ''
       };
+
+      if (this.state.city === '') {
+        _WeatherDataService.default.getCurrentLocation();
+      }
     }
   }, {
     key: "onServerResponse",
     value: function onServerResponse(weatherData) {
-      console.log('weatherData', weatherData);
       var currently = weatherData.currently,
           city = weatherData.city;
       var units = weatherData.flags.units;
@@ -913,7 +967,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return "\n  <div class=\"temp\">\n  ".concat(this.state.temperature, "\n  ").concat((this.state.units = 'ca') ? '<span>C |<a>F</a></span>' : '<span>C|<a>F</a></span>', "\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">").concat(this.state.date, "</div>\n    <div class=\"summary\">").concat(this.state.city, "</div>\n    <div class=\"date\">").concat(this.state.humidity, "</div>\n    <div class=\"date\">").concat(this.state.windSpeed, "</div>\n  </div>\n  <div class=\"weather-icon\">\n  <img src=\"").concat(_icons.default[this.state.icon], "\" />\n  </div>");
+      return "\n  <div class=\"temp\">\n  ".concat(this.state.temperature, "\n  ").concat((this.state.units = 'ca') ? '<span>C |<a>F</a></span>' : '<span>C|<a>F</a></span>', "\n  </div>\n  <div class=\"right\">\n    <div class=\"date\">").concat(this.state.date, "</div>\n    <div class=\"summary\">").concat(this.state.city, "</div>\n    <div class=\"date\">").concat(this.state.humidity, "</div>\n    <div class=\"date\">").concat(this.state.windSpeed, "</div>\n  </div>\n  <div class=\"weather-icon\">\n  <img src=\"").concat(_icons.animatedImageUrl[this.state.icon], "\" />\n  </div>");
     }
   }]);
 
@@ -1010,21 +1064,22 @@ function (_Component) {
     key: "onServerResponse",
     value: function onServerResponse(_ref) {
       var daily = _ref.daily;
+      daily.data = daily.data.slice(1, 6);
       daily.data.map(function (day) {
         day.weekday = new Date(day.time * 1000).toLocaleDateString('en-US', {
           weekday: 'short'
         });
+        day.temperatureHigh = Math.round(day.temperatureHigh);
+        day.temperatureLow = Math.round(day.temperatureLow);
       });
       this.updateState(daily);
     }
   }, {
     key: "render",
     value: function render() {
-      var data = this.state.data.map(function (day) {
+      return this.state.data.map(function (day) {
         return "\n      <WeatherForecastItem weekday=".concat(day.weekday, " icon=").concat(day.icon, " temperatureHigh=").concat(day.temperatureHigh, " temperatureLow=").concat(day.temperatureLow, "/>");
       }).join(' ');
-      console.log('data', data);
-      return "<ul>".concat(data, "</ul>");
     }
   }]);
 
@@ -1062,7 +1117,7 @@ var _Component2 = _interopRequireDefault(require("../../framework/Component"));
 
 var _ComponentFactory = _interopRequireDefault(require("../../framework/ComponentFactory"));
 
-var _icons = _interopRequireDefault(require("../../utils/icons"));
+var _icons = require("../../utils/icons");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1098,7 +1153,7 @@ function (_Component) {
   _createClass(WeatherForecastItem, [{
     key: "render",
     value: function render() {
-      return "\n  <li>\n    <h4>".concat(this.props.weekday, "</h4>\n    <p>").concat(this.props.temperatureHigh, "</p>\n    <p>").concat(this.props.temperatureLow, "</p>\n  </li>");
+      return "\n    <h4>".concat(this.props.weekday, "</h4>\n    <img src=\"").concat(_icons.animatedImageUrl[this.props.icon], "\" />\n    <p>").concat(this.props.temperatureHigh, "</p>\n    <p>").concat(this.props.temperatureLow, "</p>\n  ");
     }
   }]);
 
@@ -1201,7 +1256,7 @@ function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      return "\n    <nav class=\"search__container\">\n      <SearchBar/>\n    </nav>\n    <div id=\"card\" class=\"weather\">\n      <div class=\"details\">\n      <CurrentWeather/>\n      </div>\n    <div class=\"forcast\">\n      <WeatherForecast/>\n    </div>\n    </div>\n    ";
+      return "\n    <nav class=\"search__container\">\n      <SearchBar/>\n    </nav>\n    <div id=\"card\" class=\"weather\">\n      <div class=\"details\">\n        <CurrentWeather/>\n        <div class=\"forcast\">\n          <WeatherForecast/>\n        </div>\n      </div>\n    </div>\n    ";
     }
   }]);
 
@@ -1265,7 +1320,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57559" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65037" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

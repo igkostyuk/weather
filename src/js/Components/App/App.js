@@ -45,11 +45,11 @@ export default class App extends Component {
     </nav>
     <div id="card" class="weather">
       <div class="details">
-      <CurrentWeather/>
+        <CurrentWeather/>
+        <div class="forcast">
+          <WeatherForecast/>
+        </div>
       </div>
-    <div class="forcast">
-      <WeatherForecast/>
-    </div>
     </div>
     `;
   }
