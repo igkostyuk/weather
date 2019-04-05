@@ -18,7 +18,7 @@ export default class CurrentWeather extends Component {
       windSpeed: '',
       humidity: '',
       date: '',
-      city: ''
+      city: '',
     };
     if (this.state.city === '') {
       WeatherDataService.getCurrentLocation();
@@ -33,12 +33,13 @@ export default class CurrentWeather extends Component {
         'en-US',
         {
           month: 'long',
-          day: 'numeric'
-        }
+          day: 'numeric',
+        },
       );
       currently.temperature = Math.round(currently.temperature);
       currently.city = city;
       currently.units = units;
+      currently.humidity = Math.round(currently.humidity * 100);
       this.updateState(currently);
     }
   }
@@ -50,13 +51,13 @@ export default class CurrentWeather extends Component {
   ${
     this.state.units === 'ca'
       ? '<span>C |<a>F</a></span>'
-      : '<span>C|<a>F</a></span>'
+      : '<span><a>C</a>|F</span>'
   }
   </div>
   <div class="right">
     <div class="date">${this.state.date}</div>
     <div class="summary">${this.state.city}</div>
-    <div class="date">${this.state.humidity}</div>
+    <div class="date">${this.state.humidity} %</div>
     <div class="date">${this.state.windSpeed}</div>
   </div>
   <div class="weather-icon">

@@ -13,18 +13,21 @@ body,
 }
 
 html {
-  //background: #fad0c4;
-
+  background: #fff;
 }
 
 body {
-  //background: #fad0c4;
-  //background: linear-gradient(0deg, rgba(0, 0, 200, 0.2), rgba(0, 0, 200, 0));
+  background: #eee;
+  background: linear-gradient(0deg, rgba(0, 0, 200, 0.2), rgba(0, 0, 200, 0));
 }
 
 .background {
-  //background: #fad0c4;
-  //background: linear-gradient(120deg, rgba(50, 150, 100, 0.2), rgba(0, 0, 100, 0));
+  background: #eee;
+  background: linear-gradient(
+    120deg,
+    rgba(50, 150, 100, 0.2),
+    rgba(0, 0, 100, 0)
+  );
 }
 
 .container {
@@ -40,7 +43,11 @@ body {
   position: relative;
 
   background: #eee;
-  background: linear-gradient(240deg, rgba(150, 50, 50, 0.3), rgba(0, 0, 200, 0));
+  background: linear-gradient(
+    240deg,
+    rgba(150, 50, 50, 0.3),
+    rgba(0, 0, 200, 0)
+  );
 }
 
 #app {
@@ -76,7 +83,7 @@ body {
   text-align: center;
 }
 
-[data-is-valid="false"] {
+[data-is-valid='false'] {
   animation: blink 1s;
 }
 
@@ -98,19 +105,17 @@ body {
   top: 0.15rem;
   border-radius: 3px;
   border: 0;
-  background-color: #DAE3FD;
+  background-color: #dae3fd;
   transition: 1s ease;
   box-shadow: 9px 7px 30px 1px rgba(0, 0, 0, 0.25);
   clip: rect(1px, 1px, 1px, 1px);
   transform: scale(1);
 }
 
-.search__input:focus~.search__button {
+.search__input:focus ~ .search__button {
   transform: scale(1.17);
   background-color: green;
 }
-
-
 
 .weather {
   box-shadow: 9px 7px 40px -6px rgba(0, 0, 0, 0.25);
@@ -125,10 +130,6 @@ body {
   position: relative;
 
   .details {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     padding: 16px 20px;
     color: black;
     height: 100%;
@@ -174,7 +175,6 @@ body {
         vertical-align: top;
         margin-left: 5px;
       }
-
     }
 
     .weather-icon {
@@ -190,7 +190,6 @@ body {
     }
   }
 
-
   .forcast {
     align-self: flex-end;
 
@@ -198,7 +197,6 @@ body {
       flex-basis: 100%;
       display: flex;
       justify-content: center;
-
 
       div {
         padding: 0;
@@ -226,6 +224,6 @@ body {
 }
 
 .weather {
-  background-color: white;
+  background-color: #d8d8d8;
   transition: background-color $speed ease;
 }

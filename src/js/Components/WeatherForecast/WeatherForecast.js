@@ -2,7 +2,6 @@ import Component from '../../framework/Component';
 import AppState from '../../Services/AppState';
 import ComponentFactory from '../../framework/ComponentFactory';
 import WeatherDataService from '../../Services/WeatherDataService';
-import imageUrl from '../../utils/icons';
 
 export default class WeatherForecast extends Component {
   constructor(host, props) {
@@ -38,9 +37,11 @@ export default class WeatherForecast extends Component {
   render() {
     return this.state.data
       .map(
-        day => `<WeatherForecastItem weekday=${day.weekday} icon=${day.icon}
-                temperatureHigh=${day.temperatureHigh}
-                temperatureLow=${day.temperatureLow}/>`
+        day =>
+          `<WeatherForecastItem weekday=${day.weekday}` +
+          ` temperatureHigh=${day.temperatureHigh}` +
+          ` temperatureLow=${day.temperatureLow}` +
+          ` icon=${day.icon}/>`
       )
       .join(' ');
   }
